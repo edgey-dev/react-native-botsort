@@ -58,7 +58,7 @@ jobs:
         run: |
           git clone --depth 1 --branch 4.12.0 https://github.com/opencv/opencv opencv-source
 
-      - name: Build Ultra-Lean OpenCV for arm64-v8a
+      - name: Build small mobile OpenCV for arm64-v8a
         if: steps.cache-opencv.outputs.cache-hit != 'true'
         run: |
           cd opencv-source
@@ -77,6 +77,8 @@ jobs:
             -DBUILD_LIST=core,imgproc,calib3d \
             -DBUILD_SHARED_LIBS=OFF \
             -DBUILD_JAVA=OFF \
+            -DBUILD_ANDROID_EXAMPLES=OFF \
+            -DBUILD_ANDROID_PROJECTS=OFF \
             -DBUILD_opencv_java=OFF \
             -DBUILD_TESTS=OFF \
             -DBUILD_PERF_TESTS=OFF \
@@ -114,8 +116,7 @@ jobs:
             -DBUILD_WEBP=OFF \
             -DWITH_WEBP=OFF \
             -DBUILD_OPENJPEG=OFF \
-            -DWITH_OPENJPEG=OFF \
-            ..
+            -DWITH_OPENJPEG=OFF 
 
           make -j$(nproc) install
 
