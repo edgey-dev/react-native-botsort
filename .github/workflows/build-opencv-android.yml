@@ -1,0 +1,147 @@
+name: Build Minimal OpenCV for Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      opencv_version:
+        description: "OpenCV tag/branch to build"
+        required: false
+        default: "4.12.0"
+      ndk_version:
+        description: "NDK version"
+        required: false
+        default: "27.0.12077973"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        abi: [arm64-v8a, armeabi-v7a, x86_64]
+      fail-fast: false
+
+    steps:
+      - name: Checkout OpenCV
+        uses: actions/checkout@v4
+        with:
+          repository: opencv/opencv
+          ref: ${{ github.event.inputs.opencv_version }}
+          path: opencv
+
+      - name: Set up JDK (needed for cmake/android tooling)
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install NDK
+        run: |
+          echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager \
+            --sdk_root=${ANDROID_SDK_ROOT} \
+            "ndk;${{ github.event.inputs.ndk_version }}"
+          echo "ANDROID_NDK_HOME=${ANDROID_SDK_ROOT}/ndk/${{ github.event.inputs.ndk_version }}" >> $GITHUB_ENV
+
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Configure CMake (${{ matrix.abi }})
+        working-directory: opencv
+        run: |
+          mkdir -p build_${{ matrix.abi }}
+          cmake -GNinja \
+            -S . \
+            -B build_${{ matrix.abi }} \
+            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_NATIVE_API_LEVEL=24 \
+            -DANDROID_STL=c++_shared \
+            -DCMAKE_INSTALL_PREFIX=./build_${{ matrix.abi }}/install \
+            -DBUILD_ANDROID_PROJECTS=OFF \
+            -DBUILD_ANDROID_EXAMPLES=OFF \
+            -DBUILD_JAVA=OFF \
+            -DBUILD_opencv_java=OFF \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -s" \
+            -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -s" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--gc-sections" \
+            -DBUILD_TESTS=OFF \
+            -DBUILD_PERF_TESTS=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_DOCS=OFF \
+            -DBUILD_opencv_apps=OFF \
+            -DBUILD_opencv_python2=OFF \
+            -DBUILD_opencv_python3=OFF \
+            -DBUILD_opencv_dnn=OFF \
+            -DBUILD_LIST=core,imgproc,calib3d \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DWITH_FFMPEG=OFF \
+            -DWITH_GTK=OFF \
+            -DWITH_QT=OFF \
+            -DWITH_OPENEXR=OFF \
+            -DWITH_PROTOBUF=OFF \
+            -DWITH_QUIRC=OFF \
+            -DWITH_EIGEN=OFF \
+            -DWITH_ITT=OFF \
+            -DWITH_IPP=OFF \
+            -DBUILD_ZLIB=OFF \
+            -DBUILD_PNG=OFF \
+            -DBUILD_JPEG=OFF \
+            -DBUILD_TIFF=OFF \
+            -DBUILD_WEBP=OFF \
+            -DBUILD_OPENJPEG=OFF \
+            -DWITH_JPEG=OFF \
+            -DWITH_TIFF=OFF \
+            -DWITH_WEBP=OFF \
+            -DWITH_OPENJPEG=OFF \
+            -DWITH_PNG=OFF \
+            -DWITH_ZLIB=ON \
+            -DWITH_CUDA=OFF \
+            -DWITH_OPENCL=OFF \
+            -DWITH_VULKAN=OFF \
+            -DWITH_OPENGL=OFF \
+            -DWITH_GSTREAMER=OFF \
+            -DWITH_VTK=OFF \
+            -DWITH_GDAL=OFF \
+            -DWITH_IMGCODEC_HDR=OFF \
+            -DWITH_IMGCODEC_PXM=OFF \
+            -DWITH_IMGCODEC_SUNRASTER=OFF
+
+      - name: Build (${{ matrix.abi }})
+        working-directory: opencv
+        run: ninja -C build_${{ matrix.abi }}
+
+      - name: Install (${{ matrix.abi }})
+        working-directory: opencv
+        run: ninja -C build_${{ matrix.abi }} install
+
+      - name: Stage output
+        run: |
+          mkdir -p out/${{ matrix.abi }}
+          # Static libs (.a) live under install/sdk/native/staticlibs/<abi>/ or install/lib
+          find opencv/build_${{ matrix.abi }}/install -name "*.a" -exec cp {} out/${{ matrix.abi }}/ \;
+          find opencv/build_${{ matrix.abi }}/install -name "*.so" -exec cp {} out/${{ matrix.abi }}/ \;
+
+      - name: Upload per-ABI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencv-android-${{ matrix.abi }}
+          path: out/${{ matrix.abi }}
+          if-no-files-found: error
+
+      - name: Upload headers (once, arm64 job only)
+        if: matrix.abi == 'arm64-v8a'
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencv-android-headers
+          path: opencv/build_${{ matrix.abi }}/install/sdk/native/jni/include
+          if-no-files-found: error
+
+      - name: Upload OpenCVConfig.cmake (once, arm64 job only)
+        if: matrix.abi == 'arm64-v8a'
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencv-android-cmake-config
+          path: |
+            opencv/build_${{ matrix.abi }}/install/sdk/native/jni/*.cmake
+            opencv/build_${{ matrix.abi }}/install/sdk/native/jni/abi-*
+          if-no-files-found: warn
