@@ -80,15 +80,20 @@ set(yaml-cpp_DIR "${yaml-cpp_BINARY_DIR}" CACHE PATH "" FORCE)
 list(PREPEND CMAKE_PREFIX_PATH "${yaml-cpp_DIR}")
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 
-FetchContent_Declare(
-  opencv_mobile_android
-  URL https://github.com/nihui/opencv-mobile/releases/download/v35/opencv-mobile-4.13.0-android.zip
+# FetchContent_Declare(
+#   opencv_mobile_android
+#   URL https://github.com/nihui/opencv-mobile/releases/download/v35/opencv-mobile-4.13.0-android.zip
+# )
+# FetchContent_MakeAvailable(opencv_mobile_android)
+
+# set(OpenCV_DIR ${opencv_mobile_android_SOURCE_DIR}/sdk/native/jni)
+# find_package(OpenCV REQUIRED core imgproc calib3d)
+
+set(OpenCV_DIR
+	"${CMAKE_SOURCE_DIR}/src/main/cpp/libs/${CMAKE_ANDROID_ARCH_ABI}/sdk/native/jni"
 )
-FetchContent_MakeAvailable(opencv_mobile_android)
 
-set(OpenCV_DIR ${opencv_mobile_android_SOURCE_DIR}/sdk/native/jni)
 find_package(OpenCV REQUIRED core imgproc calib3d)
-
 
 # 1. Fetch motcpp — https://github.com/Geekgineer/motcpp
 FetchContent_Declare(
@@ -175,7 +180,9 @@ set_target_properties(${PACKAGE_NAME} PROPERTIES
 if(NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Keep debug symbols intact during desk testing phases
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -flto -fvisibility=hidden -fvisibility-inlines-hidden")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,--exclude-libs,ALL")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -flto -fvisibility=hidden -fvisibility-inlines-hidden")
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections")
+
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,--exclude-libs,ALL")
 endif()
