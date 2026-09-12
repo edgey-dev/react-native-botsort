@@ -16,33 +16,39 @@ namespace margelo::nitro::botsort
 
     HybridBoTSortTracker::HybridBoTSortTracker() : HybridBoTSortTrackerSpec() {}
 
-    void HybridBoTSortTracker::initialize(const std::string &reidModelPath, bool useGpu)
-    {
-        tracker = std::make_unique<motcpp::trackers::BotSort>(
-            reidModelPath,
-            true,
-            useGpu,
-            0.3f,
-            30,
-            50,
-            3,
-            0.3f,
-            false,
-            80,
-            "iou",
-            false,
-            0.5f,
-            0.1f,
-            0.6f,
-            30,
-            0.8f,
-            0.5f,
-            0.25f,
-            "sof",
-            30,
-            false,
-            false);
-    }
+    void HybridBoTSortTracker::initialize(const std::string &reidModelPath, bool useGpu){
+        // tracker = std::make_unique<motcpp::trackers::BotSort>(
+        //     reidModelPath,
+        //     true,
+        //     useGpu,
+        //     0.3f,
+        //     30,
+        //     50,
+        //     3,
+        //     0.3f,
+        //     false,
+        //     80,
+        //     "iou",
+        //     false,
+        //     0.5f,
+        //     0.1f,
+        //     0.6f,
+        //     30,
+        //     0.8f,
+        //     0.5f,
+        //     0.25f,
+        //     "sof",
+        //     30,
+        //     false,
+        //     false);
+
+        tracker = std::make_unique<motcpp::trackers::OracleTrack>(
+            0.3f,   // det_thresh        — minimum detection confidence
+            30,     // max_age           — frames before a lost track is removed
+            3,      // min_hits          — frames before a track is confirmed
+            9.21f,  
+            4.0f    
+        )}
 
     std::vector<TrackedObject> HybridBoTSortTracker::updateWithFrame(
         const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec> &frame,
