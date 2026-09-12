@@ -18,6 +18,12 @@ jobs:
           wget -q https://github.com/nihui/opencv-mobile/releases/download/v34/opencv-mobile-4.12.0.zip
           unzip -q opencv-mobile-4.12.0.zip
 
+      - name: Replace UMat with Mat everywhere
+        run: |
+          cd opencv-mobile-4.12.0
+          find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
+            -exec sed -i 's/\bUMat\b/Mat/g' {} +
+
       - name: Build custom OpenCV-build
         run: |
           cd opencv-mobile-4.12.0

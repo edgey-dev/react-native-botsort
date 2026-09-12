@@ -1,19 +1,20 @@
 {
   "$schema": "https://nitro.margelo.com/nitro.schema.json",
-  "cxxNamespace": [
-    "botsort"
-  ],
+  "cxxNamespace": ["botsort"],
   "ios": {
     "iosModuleName": "NitroBotsort"
   },
   "android": {
-    "androidNamespace": [
-      "botsort"
-    ],
+    "androidNamespace": ["botsort"],
     "androidCxxLibName": "NitroBotsort"
   },
-  "autolinking": {},
-  "ignorePaths": [
-    "**/node_modules"
-  ]
+  "autolinking": {
+    "BoTSortTracker": {
+      "all": {
+        "language": "c++",
+        "implementationClassName": "HybridBoTSortTracker"
+      }
+    }
+  },
+  "ignorePaths": ["**/node_modules"]
 }
