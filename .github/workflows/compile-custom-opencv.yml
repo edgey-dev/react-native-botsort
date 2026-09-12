@@ -10,14 +10,17 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Clone OpenCV mobile Source Code
         run: |
-          wget -q https://github.com/nihui/opencv-mobile/releases/download/v36/opencv-mobile-4.13.0.zip
-          unzip -q opencv-mobile-4.13.0.zip
+          wget -q https://github.com/nihui/opencv-mobile/releases/download/v34/opencv-mobile-4.12.0.zip
+          unzip -q opencv-mobile-4.12.0.zip
 
       - name: Build custom OpenCV-build
         run: |
-          cd opencv-mobile-4.13.0
+          cd opencv-mobile-4.12.0
           mkdir build
           cd build
 
@@ -27,9 +30,8 @@ jobs:
             -DANDROID_STL=c++_shared \
             -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
             -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
-            `cat ../options.txt` \
+            `cat "$GITHUB_WORKSPACE/.github/opencv/options.txt"` \
             -DBUILD_opencv_world=OFF \
-            -DBUILD_opencv_calib3d=ON \
             ..
           make -j4
           make install
@@ -50,14 +52,14 @@ jobs:
       - name: Create custom opencv build release zip archive
         run: |
           cd install
-          zip -r $GITHUB_WORKSPACE/opencv-mobile-4.13.0-android-arm64.zip . \
+          zip -r $GITHUB_WORKSPACE/opencv-mobile-4.12.0-android-arm64.zip . \
             -x "**/build/*"
 
       - name: Upload ZIP to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: opencv-botsort-4.13.0
-          name: OpenCV 4.13.0 custom Android build
-          files: ${{ github.workspace }}/opencv-mobile-4.13.0-android-arm64.zip
+          tag_name: opencv-botsort-4.12.0
+          name: OpenCV 4.12.0 custom Android build
+          files: ${{ github.workspace }}/opencv-mobile-4.12.0-android-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
