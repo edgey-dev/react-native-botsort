@@ -28,7 +28,8 @@ jobs:
             -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
             -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
             `cat ../options.txt` \
-            -DBUILD_LIST=core,imgproc,calib3d \
+            -DBUILD_opencv_world=OFF \
+            -DBUILD_opencv_calib3d=ON \
             ..
           make -j4
           make install
