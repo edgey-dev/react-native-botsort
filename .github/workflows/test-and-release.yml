@@ -164,7 +164,7 @@ jobs:
           echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE"
           echo "=========================================================="
 
-          NATIVE_DIR="android/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a"
+          NATIVE_DIR="example/android/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a"
 
           if [ -d "$NATIVE_DIR" ]; then
             echo ""
