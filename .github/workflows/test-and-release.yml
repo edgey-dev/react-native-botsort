@@ -1,9 +1,9 @@
 name: Test and Release BotSORT + OpenCV
 
 on:
-  push:
-    tags:
-      - 'v*'
+  # push:
+  #   tags:
+  #     - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -224,7 +224,7 @@ jobs:
             ios \
             nitro.json \
             package.json \
-            yarn.lock \
+            pnpm-lock.yaml \
             NitroBotsort.podspec \
             react-native.config.js \
             -x "**/build/*" \

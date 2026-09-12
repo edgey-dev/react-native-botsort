@@ -1,0 +1,62 @@
+name: Compile Custom OpenCV
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-custom-opencv:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Clone OpenCV mobile Source Code
+        run: |
+          wget -q https://github.com/nihui/opencv-mobile/releases/download/v36/opencv-mobile-4.13.0.zip
+          unzip -q opencv-mobile-4.13.0.zip
+
+      - name: Build custom OpenCV-build
+        run: |
+          cd opencv-mobile-4.13.0
+          mkdir build
+          cd build
+
+          cmake \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DANDROID_STL=c++_shared \
+            -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
+            -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
+            `cat ../options.txt` \
+            -DBUILD_LIST=core,imgproc,calib3d \
+            ..
+          make -j4
+          make install
+
+      - name: Verify OpenCV Static Libraries
+        run: |
+          echo "=========================================================="
+          echo "             OPENCV STATIC LIBRARIES"
+          echo "=========================================================="
+
+          find install/ \
+            -type f \
+            -name "*.a" \
+            -exec ls -lh {} +
+
+          echo "=========================================================="
+
+      - name: Create custom opencv build release zip archive
+        run: |
+          cd install
+          zip -r $GITHUB_WORKSPACE/opencv-mobile-4.13.0-android-arm64.zip . \
+            -x "**/build/*"
+
+      - name: Upload ZIP to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: opencv-botsort-4.13.0
+          name: OpenCV 4.13.0 custom Android build
+          files: ${{ github.workspace }}/opencv-mobile-4.13.0-android-arm64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
