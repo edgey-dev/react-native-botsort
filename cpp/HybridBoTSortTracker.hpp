@@ -23,7 +23,7 @@ namespace margelo::nitro::botsort
 
     private:
         // Fix: Instantiate utilizing the exact factory base or direct tracker interface type
-        std::unique_ptr<motcpp::trackers::OracleTrack> tracker;
+        std::unique_ptr<motcpp::trackers::BotSort> tracker;
     };
 
 } // namespace margelo::nitro::botsort
