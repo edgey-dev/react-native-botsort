@@ -13,6 +13,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-21 build-tools;37.0.0 ndk;27.1.12297006'
+
       - name: Clone OpenCV mobile Source Code
         run: |
           wget -q https://github.com/nihui/opencv-mobile/releases/download/v34/opencv-mobile-4.12.0.zip
@@ -31,13 +36,22 @@ jobs:
           cd build
 
           cmake \
+            -DCMAKE_POLICY_DEFAULT_CMP0057=NEW \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_USE_LEGACY_TOOLCHAIN_FILE=False \
+            -DANDROID_PLATFORM=android-21 \
+            -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
+            -DANDROID_CPP_FEATURES="no-rtti no-exceptions" \
             -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
             -DCMAKE_BUILD_TYPE=Release \
             -DANDROID_STL=c++_shared \
             -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
             -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
+            -DANDROID_ABI="arm64-v8a" \
             `cat "$GITHUB_WORKSPACE/.github/opencv/options.txt"` \
             -DBUILD_opencv_world=OFF \
+            -DOPENCV_DISABLE_FILESYSTEM_SUPPORT=ON \
+            -DOPENCV_EXTRA_FLAGS="-mno-outline-atomics"
             ..
           make -j4
           make install

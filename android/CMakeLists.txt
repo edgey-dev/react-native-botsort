@@ -80,20 +80,15 @@ set(yaml-cpp_DIR "${yaml-cpp_BINARY_DIR}" CACHE PATH "" FORCE)
 list(PREPEND CMAKE_PREFIX_PATH "${yaml-cpp_DIR}")
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 
-# FetchContent_Declare(
-#   opencv_mobile_android
-#   URL https://github.com/nihui/opencv-mobile/releases/download/v35/opencv-mobile-4.13.0-android.zip
-# )
-# FetchContent_MakeAvailable(opencv_mobile_android)
-
-# set(OpenCV_DIR ${opencv_mobile_android_SOURCE_DIR}/sdk/native/jni)
-# find_package(OpenCV REQUIRED core imgproc calib3d)
-
-set(OpenCV_DIR
-	"${CMAKE_SOURCE_DIR}/src/main/cpp/libs/${CMAKE_ANDROID_ARCH_ABI}/sdk/native/jni"
+FetchContent_Declare(
+  opencv_mobile_android
+  URL https://github.com/juwon-edge/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-android-arm64.zip
+  URL_HASH sha256:5c01da1a77c8498de4ff1c63ff57f232fb4f5938eee49660e39b124bd08f1c5a
 )
+FetchContent_MakeAvailable(opencv_mobile_android)
 
-find_package(OpenCV REQUIRED core imgproc calib3d)
+set(OpenCV_DIR ${opencv_mobile_android_SOURCE_DIR}/lib/cmake/opencv4)
+find_package(OpenCV REQUIRED core imgproc features2d video calib3d)
 
 # 1. Fetch motcpp — https://github.com/Geekgineer/motcpp
 FetchContent_Declare(
