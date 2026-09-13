@@ -87,7 +87,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(opencv_mobile_android)
 
-set(OpenCV_DIR ${opencv_mobile_android_SOURCE_DIR}/lib/cmake/opencv4)
+set(OpenCV_DIR ${opencv_mobile_android_SOURCE_DIR}/sdk/native/jni)
 find_package(OpenCV REQUIRED core imgproc features2d video calib3d)
 
 # 1. Fetch motcpp — https://github.com/Geekgineer/motcpp
