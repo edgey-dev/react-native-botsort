@@ -95,6 +95,7 @@ FetchContent_Declare(
   motcpp
   GIT_REPOSITORY https://github.com/Geekgineer/motcpp.git
   GIT_TAG        main
+  PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/patches/motcpp-cmake.patch
 )
 
 # ONNX Runtime Android setup for later testing:

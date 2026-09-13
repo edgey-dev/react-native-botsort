@@ -1,0 +1,23 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -179,15 +179,19 @@
+ # Link dependencies
+ # OpenCV must be PUBLIC as it's used in public headers
+ # Eigen3 must be PUBLIC as it's used in public headers
+ # Use OpenCV target if available (handles paths correctly), otherwise use legacy variables
+ if(TARGET opencv_core)
+     # Check if opencv_video and opencv_calib3d targets exist before linking
+-    set(OPENCV_LINK_LIBS opencv_core opencv_imgproc opencv_imgcodecs)
++    set(OPENCV_LINK_LIBS opencv_core opencv_imgproc)
++
++    if(TARGET opencv_imgcodecs)
++        list(APPEND OPENCV_LINK_LIBS opencv_imgcodecs)
++    endif()
+     
+     if(TARGET opencv_video)
+         list(APPEND OPENCV_LINK_LIBS opencv_video)
+     endif()
+     
+     if(TARGET opencv_calib3d)
+         list(APPEND OPENCV_LINK_LIBS opencv_calib3d)
+     endif()
