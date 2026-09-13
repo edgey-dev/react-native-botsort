@@ -42,7 +42,7 @@ jobs:
       #   TEST PASS: GENERATE & COMPILE MODULE
       # ==========================================
       - name: Install Package JavaScript Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --auto-install-peers
 
       - name: Run Nitrogen Binding Generator
         run: pnpm run specs
