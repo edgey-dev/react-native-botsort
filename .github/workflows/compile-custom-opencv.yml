@@ -51,7 +51,7 @@ jobs:
             `cat "$GITHUB_WORKSPACE/.github/opencv/options.txt"` \
             -DBUILD_opencv_world=OFF \
             -DOPENCV_DISABLE_FILESYSTEM_SUPPORT=ON \
-            -DOPENCV_EXTRA_FLAGS="-mno-outline-atomics"
+            -DOPENCV_EXTRA_FLAGS="-mno-outline-atomics" \
             ..
           make -j4
           make install
