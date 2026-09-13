@@ -2,6 +2,7 @@
   "name": "react-native-botsort",
   "version": "0.0.2",
   "description": "react-native-botsort",
+  "packageManager": "pnpm@10.18.2",
   "main": "lib/index",
   "module": "lib/index",
   "types": "lib/index.d.ts",
