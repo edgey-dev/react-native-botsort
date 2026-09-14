@@ -147,8 +147,7 @@ jobs:
           unzip -q "$APK" -d apk_contents
 
           find apk_contents/lib -type f \
-            -name "*.so" \
-            -exec du -h {}
+            -exec du -h {} +
 
   # build-ios:
   #   runs-on: macos-latest
