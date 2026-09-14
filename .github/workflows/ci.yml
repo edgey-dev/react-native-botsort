@@ -128,7 +128,7 @@ jobs:
           echo "=========================================================="
 
           APK_ANALYSER="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
-          APK=$(find example/android/build/outputs -name "*.apk" -type f | head -n 1)
+          APK=$(find example/android/app/build/outputs -name "*.apk" -type f | head -n 1)
           echo "APK=$APK" >> "$GITHUB_ENV"
           echo "Found: $APK"
 
