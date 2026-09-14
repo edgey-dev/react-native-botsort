@@ -113,7 +113,6 @@ android {
           }
           externalNativeBuild {
               cmake {
-                  // Enables Link-Time Optimization (LTO) to eliminate dead C++ functions
                   arguments "-DCMAKE_BUILD_TYPE=Release", "-DANDROID_CPP_FEATURES=rtti exceptions"
                   cppFlags "-flto", "-fvisibility=hidden", "-fdata-sections", "-ffunction-sections"
               }
