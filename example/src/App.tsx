@@ -1,12 +1,15 @@
+import { useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { multiply } from 'react-native-botsort';
-
-const result = multiply(3, 7);
+import { BoTSort } from 'react-native-botsort';
 
 export default function App() {
+  useEffect(() => {
+    BoTSort.initialize('', false);
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Result: help</Text>
     </View>
   );
 }

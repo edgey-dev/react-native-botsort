@@ -118,6 +118,44 @@ jobs:
         run: |
           yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
+      # ==========================================
+      #   MEASURE FINAL NATIVE BINARY SIZE
+      # ==========================================
+      - name: Measure Final Native Binary Size
+        run: |
+          echo "=========================================================="
+          echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE"
+          echo "=========================================================="
+
+          NATIVE_DIR="example/android/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a"
+
+          if [ -d "$NATIVE_DIR" ]; then
+            echo ""
+            echo "Native libraries:"
+            find "$NATIVE_DIR" \
+              -type f \
+              -name "*.so" \
+              -exec ls -lh {} +
+
+            echo ""
+            echo "Detailed file information:"
+            find "$NATIVE_DIR" \
+              -type f \
+              -name "*.so" \
+              -exec file {} +
+
+            echo ""
+            echo "Total native library size:"
+            du -ch "$NATIVE_DIR"/*.so 2>/dev/null | tail -n 1
+          else
+            echo "ERROR: Native library directory not found."
+            echo "Searching build output:"
+            find example/android/build/ -name "*.so" -exec ls -lh {} +
+            exit 1
+          fi
+
+          echo "=========================================================="
+
   build-ios:
     runs-on: macos-latest
 
