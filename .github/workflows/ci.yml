@@ -148,8 +148,7 @@ jobs:
 
           find apk_contents/lib -type f \
             -name "*.so" \
-            -exec du -h {} + |
-          grep -E 'NitroBotsort|opencv'
+            -exec du -h {}
 
   # build-ios:
   #   runs-on: macos-latest
