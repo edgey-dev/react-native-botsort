@@ -6,7 +6,7 @@
   "types": "./lib/typescript/module/src/index.d.ts",
   "exports": {
     ".": {
-      "react-native-botsort-source": "./src/index.tsx",
+      "react-native-botsort-source": "./src/index.ts",
       "types": "./lib/typescript/module/src/index.d.ts",
       "default": "./lib/module/index.js",
       "module": {
