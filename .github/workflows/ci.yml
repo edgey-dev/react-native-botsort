@@ -122,6 +122,7 @@ jobs:
       #   MEASURE FINAL NATIVE BINARY SIZE
       # ==========================================
       - name: Measure Final Native Binary Size
+        if: env.turbo_cache_hit != 1
         run: |
           echo "=========================================================="
           echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE"
