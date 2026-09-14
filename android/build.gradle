@@ -118,7 +118,8 @@ android {
                   cppFlags "-flto", "-fvisibility=hidden", "-fdata-sections", "-ffunction-sections"
               }
             }
-        },   
+        }
+
     debug {
           externalNativeBuild {
               cmake {
