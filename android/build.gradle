@@ -58,7 +58,7 @@ android {
 
         buildTypes {
           debug {
-            cppFlags "-O1 -g"
+            cppFlags "-Os -g"
           }
           release {
             cppFlags "-Os"
