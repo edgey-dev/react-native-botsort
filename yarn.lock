@@ -9484,7 +9484,7 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.86.2"
     react-native-builder-bob: "npm:^0.43.0"
-    react-native-nitro-modules: "npm:^0.36.5"
+    react-native-nitro-modules: "npm:^0.37.1"
     react-native-vision-camera: "npm:>=4.0.0"
     release-it: "npm:^21.0.1"
     turbo: "npm:^2.10.8"
@@ -9492,7 +9492,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-    react-native-nitro-modules: ^0.36.5
+    react-native-nitro-modules: "*"
     react-native-vision-camera: ">=4.0.0"
   languageName: unknown
   linkType: soft
