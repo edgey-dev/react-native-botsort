@@ -1,6 +1,6 @@
 {
   "name": "react-native-botsort",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A react native library created with Nitro that implements the BoTSORT tracking algorthim",
   "main": "./lib/commonjs/index.js",
   "types": "./lib/typescript/module/src/index.d.ts",
