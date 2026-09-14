@@ -124,19 +124,32 @@ jobs:
       - name: Measure Final Native Binary Size
         run: |
           echo "=========================================================="
-          echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE + APP BUNDLE SIZE"
+          echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE"
           echo "=========================================================="
 
           APK_ANALYSER="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
           APK=$(find example/android/app/build/outputs -name "*.apk" -type f | head -n 1)
+
           echo "APK=$APK" >> "$GITHUB_ENV"
           echo "Found: $APK"
 
+          echo ""
           echo "App Description:"
-          "$APK_ANALYSER" app summary "$APK"
+          "$APK_ANALYSER" apk summary "$APK"
 
-          echo "App library info:"
-          "$APK_ANALYSER" apk file-size "$APK" --files "/lib/**"
+          echo ""
+          echo "APK Size:"
+          "$APK_ANALYSER" apk file-size --human-readable "$APK"
+
+          echo ""
+          echo "Native library sizes:"
+          mkdir -p apk_contents
+          unzip -q "$APK" -d apk_contents
+
+          find apk_contents/lib -type f \
+            -name "*.so" \
+            -exec du -h {} + |
+          grep -E 'NitroBotsort|opencv'
 
   # build-ios:
   #   runs-on: macos-latest
