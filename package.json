@@ -62,14 +62,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/juwon-edge/react-native-botsort.git"
+    "url": "git+https://github.com/edgey-dev/react-native-botsort.git"
   },
-  "author": "juwon-edge <juwonchina@gmail.com> (https://github.com/juwon-edge)",
+  "author": "edgey-dev <juwonchina@gmail.com> (https://github.com/edgey-dev)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/juwon-edge/react-native-botsort/issues"
+    "url": "https://github.com/edgey-dev/react-native-botsort/issues"
   },
-  "homepage": "https://github.com/juwon-edge/react-native-botsort#readme",
+  "homepage": "https://github.com/edgey-dev/react-native-botsort#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

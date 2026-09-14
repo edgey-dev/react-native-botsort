@@ -82,7 +82,7 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 
 FetchContent_Declare(
   opencv_mobile_android
-  URL https://github.com/juwon-edge/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-android-arm64.zip
+  URL https://github.com/edgey-dev/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-android-arm64.zip
   URL_HASH SHA256=90b871059ed7407cac76e76a3a5f8814572f430c27a2e1737471114d4436b511
 )
 FetchContent_MakeAvailable(opencv_mobile_android)
