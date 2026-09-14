@@ -1,20 +1,22 @@
 {
-  "include": [
-    "src"
-  ],
   "compilerOptions": {
-    "composite": true,
-    "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": ".",
+    "paths": {
+      "react-native-botsort": ["./src/index"]
+    },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
+    "customConditions": [
+      "react-native-botsort-source",
+      "react-native-strict-api"
+    ],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react",
-    "lib": ["esnext"],
-    "module": "esnext",
+    "jsx": "react-jsx",
+    "lib": ["ESNext"],
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "noEmit": false,
+    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
@@ -23,7 +25,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
+    "target": "ESNext",
     "verbatimModuleSyntax": true
   }
 }

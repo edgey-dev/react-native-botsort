@@ -1,116 +1,199 @@
 {
   "name": "react-native-botsort",
-  "version": "0.0.2",
-  "description": "react-native-botsort",
-  "packageManager": "pnpm@10.18.2",
-  "main": "lib/index",
-  "module": "lib/index",
-  "types": "lib/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "version": "0.1.0",
+  "description": "A react native library created with Nitro that implements the BoTSORT tracking algorthim",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "react-native-botsort-source": "./src/index.tsx",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "src",
-    "react-native.config.js",
     "lib",
-    "nitrogen",
-    "android/build.gradle",
-    "android/gradle.properties",
-    "android/fix-prefab.gradle",
-    "android/CMakeLists.txt",
-    "android/src",
+    "android",
+    "ios",
     "cpp",
-    "ios/**/*.h",
-    "ios/**/*.m",
-    "ios/**/*.mm",
-    "ios/**/*.cpp",
-    "ios/**/*.swift",
-    "app.plugin.js",
+    "nitrogen",
     "nitro.json",
     "*.podspec",
-    "README.md"
+    "react-native.config.js",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf android/build node_modules/**/android/build lib",
-    "lint": "eslint \"**/*.{js,ts,tsx}\" --fix",
-    "lint-ci": "eslint \"**/*.{js,ts,tsx}\" -f @jamesacarr/github-actions --max-warnings 0",
-    "typescript": "tsc",
-    "specs": "tsc --noEmit false && nitrogen --logLevel=\"debug\""
+    "example": "yarn workspace react-native-botsort-example",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
+    "nitrogen": "nitrogen",
+    "typecheck": "tsc",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "test": "jest",
+    "release": "release-it --only-version",
+    "web": "vite",
+    "build:web": "vite build"
   },
   "keywords": [
     "react-native",
-    "nitro"
+    "ios",
+    "android",
+    "botsort",
+    "cv",
+    "computer vision",
+    "tracking algorithim"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/margelo/nitro.git"
+    "url": "git+https://github.com/juwon-edge/react-native-botsort.git"
   },
-  "author": "Marc Rousavy <me@mrousavy.com> (https://github.com/mrousavy)",
+  "author": "juwon-edge <juwonchina@gmail.com> (https://github.com/juwon-edge)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/margelo/nitro/issues"
+    "url": "https://github.com/juwon-edge/react-native-botsort/issues"
   },
-  "homepage": "https://nitro.margelo.com/docs/getting-started/how-to-build-a-nitro-module",
+  "homepage": "https://github.com/juwon-edge/react-native-botsort#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@react-native/eslint-config": "0.86.3",
-    "@types/react": "^19.2.15",
-    "eslint": "^9.39.4",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@eslint/compat": "^2.1.0",
+    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/js": "^9.39.5",
+    "@jest/globals": "^29.7.0",
+    "@react-native/babel-preset": "0.86.2",
+    "@react-native/eslint-config": "0.86.2",
+    "@react-native/jest-preset": "0.86.2",
+    "@release-it/conventional-changelog": "^12.0.0",
+    "@types/react": "^19.2.0",
+    "commitlint": "^21.2.1",
+    "del-cli": "^7.0.0",
+    "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "nitrogen": "*",
-    "prettier": "^3.8.3",
+    "eslint-plugin-ft-flow": "^3.0.11",
+    "eslint-plugin-prettier": "^5.5.6",
+    "jest": "^29.7.0",
+    "lefthook": "^2.1.10",
+    "nitrogen": "^0.36.5",
+    "prettier": "^3.9.6",
     "react": "19.2.3",
-    "react-native": "0.86.3",
-    "react-native-nitro-modules": "*",
+    "react-native": "0.86.2",
+    "react-native-builder-bob": "^0.43.0",
+    "react-native-nitro-modules": "^0.36.5",
+    "react-native-web": "~0.21.2",
+    "release-it": "^21.0.1",
+    "turbo": "^2.10.8",
     "react-native-vision-camera": ">=4.0.0",
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-nitro-modules": "*",
-    "react-native-vision-camera": ">=4.0.0"
+    "react-native-vision-camera": ">=4.0.0",
+    "react-native-nitro-modules": "^0.36.5"
   },
-  "peerDependenciesMeta": {
-    "react-native-nitro-modules": {
-      "optional": true
-    }
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@react-native",
-      "prettier"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "warn",
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@4.11.0",
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "custom",
         {
-          "quoteProps": "consistent",
-          "singleQuote": true,
-          "tabWidth": 2,
-          "trailingComma": "es5",
-          "useTabs": false
+          "script": "nitrogen",
+          "clean": "nitrogen/"
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
         }
       ]
-    }
+    ]
   },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ],
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "es5",
-    "useTabs": false,
-    "semi": false
+    "useTabs": false
+  },
+  "jest": {
+    "preset": "@react-native/jest-preset",
+    "testEnvironmentOptions": {
+      "customExportConditions": [
+        "require",
+        "react-native",
+        "<%- project.sourceCondition -%>"
+      ]
+    },
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": {
+          "name": "angular"
+        }
+      }
+    }
+  },
+  "create-react-native-library": {
+    "type": "nitro-module",
+    "languages": "cpp",
+    "tools": [
+      "eslint",
+      "jest",
+      "lefthook",
+      "release-it",
+      "vite"
+    ],
+    "version": "0.63.1"
   }
 }
