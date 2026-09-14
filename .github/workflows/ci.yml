@@ -139,7 +139,7 @@ jobs:
 
           echo ""
           echo "APK Size:"
-          "$APK_ANALYSER" apk file-size --human-readable "$APK"
+          "$APK_ANALYSER" apk file-size "$APK"
 
           echo ""
           echo "Native library sizes:"
