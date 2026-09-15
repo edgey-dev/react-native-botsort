@@ -14,7 +14,7 @@
 namespace margelo::nitro::botsort
 {
 
-    HybridBoTSortTracker::HybridBoTSortTracker() : HybridBoTSortTrackerSpec() {}
+    HybridBoTSortTracker::HybridBoTSortTracker() : HybridObject(TAG), HybridBoTSortTrackerSpec() {}
 
     void HybridBoTSortTracker::initialize(const std::string &reidModelPath, bool useGpu)
     {
