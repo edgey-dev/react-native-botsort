@@ -123,7 +123,7 @@ android {
           externalNativeBuild {
               cmake {
                   arguments "-DCMAKE_BUILD_TYPE=Debug", "-DANDROID_CPP_FEATURES=rtti exceptions"
-                  cppFlags "-Wl,--gc-sections", "-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-Os", "-fvisibility-inlines-hidden"
+                  cppFlags "-Wl,--gc-sections", "-flto","-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-Os", "-fvisibility-inlines-hidden"
               }
             }
         }     
