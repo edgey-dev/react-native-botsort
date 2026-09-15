@@ -176,9 +176,9 @@ set_target_properties(${PACKAGE_NAME} PROPERTIES
 # if(NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "Debug")
 #     # Keep debug symbols intact during desk testing phases
 # else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -flto -fvisibility=hidden -fvisibility-inlines-hidden")
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -flto -fvisibility=hidden -fvisibility-inlines-hidden")
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections")
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections")
 
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,--exclude-libs,ALL")
+#   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,--exclude-libs,ALL")
 # endif()

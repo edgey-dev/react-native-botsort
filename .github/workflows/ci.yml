@@ -121,34 +121,34 @@ jobs:
       # ==========================================
       #   MEASURE FINAL NATIVE BINARY SIZE
       # ==========================================
-      - name: Measure Final Native Binary Size
-        if: env.turbo_cache_hit != 1
-        run: |
-          echo "=========================================================="
-          echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE"
-          echo "=========================================================="
+      # - name: Measure Final Native Binary Size
+      #   if: env.turbo_cache_hit != 1
+      #   run: |
+      #     echo "=========================================================="
+      #     echo "       FINAL STRIPPED BOTSORT + OPENCV BINARY SIZE"
+      #     echo "=========================================================="
 
-          APK_ANALYSER="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
-          APK=$(find example/android/app/build/outputs -name "*.apk" -type f | head -n 1)
+      #     APK_ANALYSER="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
+      #     APK=$(find example/android/app/build/outputs -name "*.apk" -type f | head -n 1)
 
-          echo "APK=$APK" >> "$GITHUB_ENV"
-          echo "Found: $APK"
+      #     echo "APK=$APK" >> "$GITHUB_ENV"
+      #     echo "Found: $APK"
 
-          echo ""
-          echo "App Description:"
-          "$APK_ANALYSER" apk summary "$APK"
+      #     echo ""
+      #     echo "App Description:"
+      #     "$APK_ANALYSER" apk summary "$APK"
 
-          echo ""
-          echo "APK Size:"
-          "$APK_ANALYSER" apk file-size "$APK"
+      #     echo ""
+      #     echo "APK Size:"
+      #     "$APK_ANALYSER" apk file-size "$APK"
 
-          echo ""
-          echo "Native library sizes:"
-          mkdir -p apk_contents
-          unzip -q "$APK" -d apk_contents
+      #     echo ""
+      #     echo "Native library sizes:"
+      #     mkdir -p apk_contents
+      #     unzip -q "$APK" -d apk_contents
 
-          find apk_contents/lib -type f \
-            -exec du -h {} +
+      #     find apk_contents/lib -type f \
+      #       -exec du -h {} +
 
   # build-ios:
   #   runs-on: macos-latest
