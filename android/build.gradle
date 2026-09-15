@@ -122,6 +122,7 @@ android {
     debug {
           externalNativeBuild {
               cmake {
+                // Do not remove "-Wl,--gc-sections", "-flto" flags, they prevent motcpp from linking a problematic static library that causes build errors
                   arguments "-DCMAKE_BUILD_TYPE=Debug", "-DANDROID_CPP_FEATURES=rtti exceptions"
                   cppFlags "-Wl,--gc-sections", "-flto","-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-Os", "-fvisibility-inlines-hidden"
               }
