@@ -122,6 +122,7 @@ android {
     debug {
           externalNativeBuild {
               cmake {
+                  arguments "-DCMAKE_BUILD_TYPE=Debug", "-DANDROID_CPP_FEATURES=rtti exceptions"
                   cppFlags "-flto", "-fvisibility=hidden", "-fdata-sections", "-ffunction-sections"
               }
             }
