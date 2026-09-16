@@ -45,8 +45,8 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
             -DCMAKE_BUILD_TYPE=Release \
             -DANDROID_STL=c++_shared \
-            -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
-            -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections -fopenmp" \
+            -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections " \
+            -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections" \
             -DANDROID_ABI="arm64-v8a" \
             `cat "$GITHUB_WORKSPACE/.github/opencv/options.txt"` \
             -DBUILD_opencv_world=OFF \
