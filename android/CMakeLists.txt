@@ -83,7 +83,7 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 FetchContent_Declare(
   opencv_mobile_android
   URL https://github.com/edgey-dev/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-android-arm64.zip
-  URL_HASH SHA256=eafbab21d2a1a81092dd024d5478be01478cc2bfafb19d26583bc49778fb72ea
+  URL_HASH SHA256=90ee9e647344b22eacca06d03c938501fef0d60a7f3198567c10d606eea60c0f
 )
 FetchContent_MakeAvailable(opencv_mobile_android)
 
@@ -156,11 +156,6 @@ include_directories(
 find_library(LOG_LIB log)
 find_package(react-native-vision-camera REQUIRED)  #<-- for the HybridFrameSpec
 
-file(GLOB_RECURSE OMP_LIB "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/*/lib/clang/*/lib/linux/aarch64/libomp.a")
-list(GET OMP_LIB 0 OMP_LIB)
-message(STATUS "Found libomp.a: ${OMP_LIB}")
-
-
 # Link all libraries together — single consolidated call
 target_link_libraries(
         ${PACKAGE_NAME}
@@ -169,7 +164,6 @@ target_link_libraries(
         motcpp::motcpp
         react-native-vision-camera::VisionCamera
         ${OpenCV_LIBS}
-        ${OMP_LIB}
 )
 
 target_compile_options(${PACKAGE_NAME} PRIVATE -fopenmp)
