@@ -156,6 +156,11 @@ include_directories(
 find_library(LOG_LIB log)
 find_package(react-native-vision-camera REQUIRED)  #<-- for the HybridFrameSpec
 
+file(GLOB_RECURSE OMP_LIB "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/*/lib/clang/*/lib/linux/aarch64/libomp.a")
+list(GET OMP_LIB 0 OMP_LIB)
+message(STATUS "Found libomp.a: ${OMP_LIB}")
+
+
 # Link all libraries together — single consolidated call
 target_link_libraries(
         ${PACKAGE_NAME}
@@ -164,6 +169,7 @@ target_link_libraries(
         motcpp::motcpp
         react-native-vision-camera::VisionCamera
         ${OpenCV_LIBS}
+        ${OMP_LIB}
 )
 
 target_compile_options(${PACKAGE_NAME} PRIVATE -fopenmp)
