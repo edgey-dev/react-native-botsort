@@ -141,7 +141,6 @@ namespace margelo::nitro::botsort
 
         // 2. Proportional Scaling & Rescale Factor Extractions with Edge Guards
         int targetWidth = 320;
-        // Fix 1: Guard against targetHeight truncating to zero to prevent divide-by-zero crashes
         int targetHeight = std::max((int)((float)originalHeight * ((float)targetWidth / (float)originalWidth)), 1);
 
         cv::Mat lowResFrame;
