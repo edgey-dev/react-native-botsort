@@ -166,8 +166,8 @@ target_link_libraries(
         ${OpenCV_LIBS}
 )
 
-target_compile_options(${PACKAGE_NAME} PRIVATE -fopenmp)
-target_link_options(${PACKAGE_NAME} PRIVATE -fopenmp)
+# target_compile_options(${PACKAGE_NAME} PRIVATE)
+# target_link_options(${PACKAGE_NAME} PRIVATE)
 
 # Export only the explicit initialization hook required by Nitro's JSI runtime loader
 set_target_properties(${PACKAGE_NAME} PROPERTIES

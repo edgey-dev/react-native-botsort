@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { BoTSort } from 'react-native-botsort';
+import { botsort } from 'react-native-botsort';
 
 export default function App() {
   useEffect(() => {
-    BoTSort.initialize('', false);
+    botsort.initialize('', false);
   }, []);
 
   return (
