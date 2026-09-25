@@ -4,7 +4,7 @@ import { botsort } from 'react-native-botsort';
 
 export default function App() {
   useEffect(() => {
-    botsort.initialize('', false);
+    botsort.initialize({});
   }, []);
 
   return (
