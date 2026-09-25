@@ -47,17 +47,16 @@
 
 void BoTSORT::_load_params_from_config(const margelo::nitro::botsort::BoTSORTConfig &config)
 {
-    _gmc_enabled = config.enable_gmc;
-    _track_high_thresh = config.track_high_thresh;
-    _track_low_thresh = config.track_low_thresh;
-    _new_track_thresh = config.new_track_thresh;
-    _track_buffer = config.track_buffer;
-    _match_thresh = config.match_thresh;
-    _proximity_thresh = config.proximity_thresh;
-    _appearance_thresh = config.appearance_thresh;
-    _gmc_method_name = config.gmc_method_name;
-    _frame_rate = config.frame_rate;
-    _lambda = config.lambda;
+    _gmc_enabled = config.enable_gmc.value_or(false);
+    _track_high_thresh = config.track_high_thresh.value_or(0.6);
+    _track_low_thresh = config.track_low_thresh.value_or(0.1);
+    _new_track_thresh = config.new_track_thresh.value_or(0.7);
+    _track_buffer = config.track_buffer.value_or(30);
+    _match_thresh = config.match_thresh.value_or(0.7);
+    _proximity_thresh = config.proximity_thresh.value_or(0.5);
+    _appearance_thresh = config.appearance_thresh.value_or(0.25);
+    _frame_rate = config.frame_rate.value_or(30);
+    _lambda = config.lambda.value_or(0.985);
 }
 
 BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config)
