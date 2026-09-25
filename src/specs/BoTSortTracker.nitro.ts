@@ -24,7 +24,6 @@ export enum GMCMethod {
   ECC,
   SOF,
   VideoStab,
-  OptFlowModified,
 }
 
 export interface BoTSORTConfig {
@@ -77,17 +76,8 @@ export interface VideoStabGMCConfig {
   detections_masking?: boolean;
 }
 
-export interface OptFlowGMCConfig {
-  gmc_method: GMCMethod.OptFlowModified;
-  downscale?: number;
-}
-
 export type GMCConfig =
-  | OrbGMCConfig
-  | EccGMCConfig
-  | SofGMCConfig
-  | VideoStabGMCConfig
-  | OptFlowGMCConfig;
+  OrbGMCConfig | EccGMCConfig | SofGMCConfig | VideoStabGMCConfig;
 
 export interface BoTSortTracker extends HybridObject<{
   ios: 'c++';

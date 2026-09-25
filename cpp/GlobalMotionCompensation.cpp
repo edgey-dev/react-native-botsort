@@ -70,10 +70,10 @@ ORB_GMC::ORB_GMC(const OrbGMCConfig &config)
 
 void ORB_GMC::_load_params_from_config(const OrbGMCConfig &config)
 {
-    _downscale = config.downscale;
-    _inlier_ratio = config.inlier_ratio;
-    _ransac_conf = config.ransac_conf;
-    _ransac_max_iters = static_cast<int>(config.ransac_max_iters);
+    _downscale = config.downscale.value_or(2.0);
+    _inlier_ratio = config.inlier_ratio.value_or(0.5);
+    _ransac_conf = config.ransac_conf.value_or(0.99);
+    _ransac_max_iters = static_cast<int>(config.ransac_max_iters.value_or(1000));
 }
 
 HomographyMatrix ORB_GMC::apply(const cv::Mat &frame_raw,
@@ -258,7 +258,7 @@ HomographyMatrix ORB_GMC::apply(const cv::Mat &frame_raw,
 }
 
 // ECC
-ECC_GMC::ECC_GMC(const ECC_Params &config)
+ECC_GMC::ECC_GMC(const EccGMCConfig &config)
 {
     _load_params_from_config(config);
 
@@ -267,11 +267,11 @@ ECC_GMC::ECC_GMC(const ECC_Params &config)
                          _max_iterations, _termination_eps);
 }
 
-void ECC_GMC::_load_params_from_config(const ECC_Params &config)
+void ECC_GMC::_load_params_from_config(const EccGMCConfig &config)
 {
-    _downscale = config.downscale;
-    _max_iterations = static_cast<int>(config.max_iterations);
-    _termination_eps = static_cast<int>(config.termination_eps);
+    _downscale = config.downscale.value_or(5.0);
+    _max_iterations = static_cast<int>(config.max_iterations.value_or(500));
+    _termination_eps = static_cast<int>(config.termination_eps.value_or(1000));
 }
 
 HomographyMatrix ECC_GMC::apply(const cv::Mat &frame_raw,
@@ -328,27 +328,27 @@ HomographyMatrix ECC_GMC::apply(const cv::Mat &frame_raw,
 }
 
 // Optical Flow
-SparseOptFlow_GMC::SparseOptFlow_GMC(const SparseOptFlow_Params &config)
+SparseOptFlow_GMC::SparseOptFlow_GMC(const SofGMCConfig &config)
 {
     _load_params_from_config(config);
 }
 
 void SparseOptFlow_GMC::_load_params_from_config(
-    const SparseOptFlow_Params &config)
+    const SofGMCConfig &config)
 {
-    _useHarrisDetector = config.use_harris_detector;
+    _useHarrisDetector = config.use_harris_detector.value_or(false);
 
-    _maxCorners = config.max_corners;
-    _blockSize = config.block_size;
-    _ransac_max_iters = config.ransac_max_iters;
+    _maxCorners = static_cast<int>(config.max_corners.value_or(1000));
+    _blockSize = static_cast<int>(config.block_size.value_or(3));
+    _ransac_max_iters = static_cast<int>(config.ransac_max_iters.value_or(500));
 
-    _qualityLevel = config.quality_level;
-    _k = config.k;
-    _minDistance = config.min_distance;
+    _qualityLevel = config.quality_level.value_or(0.01);
+    _k = config.k.value_or(0.04);
+    _minDistance = config.min_distance.value_or(1.0);
 
-    _downscale = config.downscale;
-    _inlier_ratio = config.inlier_ratio;
-    _ransac_conf = config.ransac_conf;
+    _downscale = config.downscale.value_or(2.0);
+    _inlier_ratio = config.inlier_ratio.value_or(0.5);
+    _ransac_conf = config.ransac_conf.value_or(0.99);
 }
 
 HomographyMatrix
@@ -449,7 +449,7 @@ SparseOptFlow_GMC::apply(const cv::Mat &frame_raw,
 
 // OpenCV VideoStab
 OpenCV_VideoStab_GMC::OpenCV_VideoStab_GMC(
-    const OpenCV_VideoStab_GMC_Params &config)
+    const VideoStabGMCConfig &config)
 {
     _load_params_from_config(config);
 
@@ -464,11 +464,11 @@ OpenCV_VideoStab_GMC::OpenCV_VideoStab_GMC(
 }
 
 void OpenCV_VideoStab_GMC::_load_params_from_config(
-    const OpenCV_VideoStab_GMC_Params &config)
+    const VideoStabGMCConfig &config)
 {
-    _downscale = config.downscale;
-    _num_features = config.num_features;
-    _detections_masking = config.detection_masking;
+    _downscale = config.downscale.value_or(2.0);
+    _num_features = config.num_features.value_or(4000);
+    _detections_masking = config.detection_masking.value_or(true);
 }
 
 HomographyMatrix
@@ -535,27 +535,3 @@ OpenCV_VideoStab_GMC::apply(const cv::Mat &frame_raw,
     return H;
 }
 
-// Optical Flow Modified
-OptFlowModified_GMC::OptFlowModified_GMC(const OptFlowModified_Params &config)
-{
-    _load_params_from_config(config);
-}
-
-void OptFlowModified_GMC::_load_params_from_config(
-    const OptFlowModified_Params &config)
-{
-    _downscale = config.downscale;
-}
-
-HomographyMatrix
-OptFlowModified_GMC::apply(const cv::Mat &frame,
-                           const std::vector<Detection> &detections)
-{
-    HomographyMatrix H;
-    H.setIdentity();
-
-    std::cout << "Warning: OptFlowModified_GMC not implemented, returning "
-                 "identity matrix"
-              << std::endl;
-    return H;
-}

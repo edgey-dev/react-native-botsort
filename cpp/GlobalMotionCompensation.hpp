@@ -99,21 +99,6 @@ private:
     float _inlier_ratio, _ransac_conf;
 };
 
-class OptFlowModified_GMC : public GMC_Algorithm
-{
-public:
-    explicit OptFlowModified_GMC(const OptFlowGMCConfig &config);
-    HomographyMatrix apply(const cv::Mat &frame_raw,
-                           const std::vector<Detection> &detections) override;
-
-private:
-    void _load_params_from_config(const OptFlowGMCConfig &config);
-
-private:
-    std::string _algo_name = "OptFlowModified";
-    float _downscale;
-};
-
 class OpenCV_VideoStab_GMC : public GMC_Algorithm
 {
 public:
