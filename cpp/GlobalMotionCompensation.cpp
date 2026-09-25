@@ -3,53 +3,51 @@
 #include <opencv2/videostab/global_motion.hpp>
 #include <opencv2/videostab/motion_core.hpp>
 
-std::map<std::string, GMC_Method> GlobalMotionCompensation::GMC_method_map = {
-    {"orb", GMC_Method::ORB},
-    {"ecc", GMC_Method::ECC},
-    {"sparseOptFlow", GMC_Method::SparseOptFlow},
-    {"optFlowModified", GMC_Method::OptFlowModified},
-    {"OpenCV_VideoStab", GMC_Method::OpenCV_VideoStab},
-};
+// std::map<std::string, GMC_Method> GlobalMotionCompensation::GMC_method_map = {
+//     {"orb", GMC_Method::ORB},
+//     {"ecc", GMC_Method::ECC},
+//     {"sparseOptFlow", GMC_Method::SparseOptFlow},
+//     {"optFlowModified", GMC_Method::OptFlowModified},
+//     {"OpenCV_VideoStab", GMC_Method::OpenCV_VideoStab},
+// };
 
-GlobalMotionCompensation::GlobalMotionCompensation(const GMC_Params &gmc_params)
+GlobalMotionCompensation::GlobalMotionCompensation(const GMC_Config &gmc_params)
 {
-    GMC_Method method = gmc_params.method_;
-    auto &params = gmc_params.method_params_;
-
-    if (method == GMC_Method::ORB)
+    GMCMethod gmc_method = std::visit([](auto &&obj)
+                                      { return obj.gmc_method; }, gmc_params);
+    if (gmc_method == GMCMethod::ORB)
     {
         std::cout << "Using ORB for GMC" << std::endl;
         _gmc_algorithm =
-            std::make_unique<ORB_GMC>(std::get<ORB_Params>(params));
+            std::make_unique<ORB_GMC>(std::get<OrbGMCConfig>(gmc_params));
     }
-    else if (method == GMC_Method::ECC)
+    else if (gmc_method == GMCMethod::ECC)
     {
         std::cout << "Using ECC for GMC" << std::endl;
         _gmc_algorithm =
-            std::make_unique<ECC_GMC>(std::get<ECC_Params>(params));
+            std::make_unique<ECC_GMC>(std::get<EccGMCConfig>(gmc_params));
     }
-    else if (method == GMC_Method::SparseOptFlow)
+    else if (gmc_method == GMCMethod::SOF)
     {
         std::cout << "Using SparseOptFlow for GMC" << std::endl;
         _gmc_algorithm = std::make_unique<SparseOptFlow_GMC>(
-            std::get<SparseOptFlow_Params>(params));
+            std::get<SofGMCConfig>(gmc_params));
     }
-    else if (method == GMC_Method::OptFlowModified)
+    else if (gmc_method == GMCMethod::OPTFLOWMODIFIED)
     {
         std::cout << "Using OptFlowModified for GMC" << std::endl;
         _gmc_algorithm = std::make_unique<OptFlowModified_GMC>(
-            std::get<OptFlowModified_Params>(params));
+            std::get<OptFlowGMCConfig>(gmc_params));
     }
-    else if (method == GMC_Method::OpenCV_VideoStab)
+    else if (gmc_method == GMCMethod::VIDEOSTAB)
     {
         std::cout << "Using OpenCV_VideoStab for GMC" << std::endl;
         _gmc_algorithm = std::make_unique<OpenCV_VideoStab_GMC>(
-            std::get<OpenCV_VideoStab_GMC_Params>(params));
+            std::get<VideoStabGMCConfig>(gmc_params));
     }
     else
     {
-        throw std::runtime_error("Unknown global motion compensation method: " +
-                                 std::to_string(method));
+        throw std::runtime_error("Unknown global motion compensation method");
     }
 }
 
@@ -61,7 +59,7 @@ GlobalMotionCompensation::apply(const cv::Mat &frame,
 }
 
 // ORB
-ORB_GMC::ORB_GMC(const ORB_Params &config)
+ORB_GMC::ORB_GMC(const OrbGMCConfig &config)
 {
     _load_params_from_config(config);
 
@@ -70,7 +68,7 @@ ORB_GMC::ORB_GMC(const ORB_Params &config)
     _matcher = cv::BFMatcher::create(cv::NORM_HAMMING); // Brute Force Matcher
 }
 
-void ORB_GMC::_load_params_from_config(const ORB_Params &config)
+void ORB_GMC::_load_params_from_config(const OrbGMCConfig &config)
 {
     _downscale = config.downscale;
     _inlier_ratio = config.inlier_ratio;

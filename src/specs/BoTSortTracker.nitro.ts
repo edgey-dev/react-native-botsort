@@ -43,43 +43,43 @@ export interface BoTSORTConfig {
 
 export interface OrbGMCConfig {
   gmc_method: GMCMethod.ORB;
-  downscale: number;
-  inlier_ratio: number;
-  ransac_conf: number;
-  ransac_max_iters: number;
+  downscale?: number;
+  inlier_ratio?: number;
+  ransac_conf?: number;
+  ransac_max_iters?: number;
 }
 
 export interface EccGMCConfig {
   gmc_method: GMCMethod.ORB;
-  downscale: number;
-  max_iterations: number;
-  termination_eps: number;
+  downscale?: number;
+  max_iterations?: number;
+  termination_eps?: number;
 }
 
 export interface SofGMCConfig {
   gmc_method: GMCMethod.SOF;
-  downscale: number;
-  use_harris_detector: boolean;
-  max_corners: number;
-  block_size: number;
-  quality_level: number;
-  k: number;
-  min_distance: number;
-  inlier_ratio: number;
-  ransac_conf: number;
-  ransac_max_iters: number;
+  downscale?: number;
+  use_harris_detector?: boolean;
+  max_corners?: number;
+  block_size?: number;
+  quality_level?: number;
+  k?: number;
+  min_distance?: number;
+  inlier_ratio?: number;
+  ransac_conf?: number;
+  ransac_max_iters?: number;
 }
 
 export interface VideoStabGMCConfig {
   gmc_method: GMCMethod.VideoStab;
-  downscale: number;
-  num_features: number;
-  detections_masking: boolean;
+  downscale?: number;
+  num_features?: number;
+  detections_masking?: boolean;
 }
 
 export interface OptFlowGMCConfig {
   gmc_method: GMCMethod.OptFlowModified;
-  downscale: number;
+  downscale?: number;
 }
 
 export type GMCConfig =

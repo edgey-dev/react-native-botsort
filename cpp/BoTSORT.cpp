@@ -59,7 +59,7 @@ void BoTSORT::_load_params_from_config(const margelo::nitro::botsort::BoTSORTCon
     _lambda = config.lambda.value_or(0.985);
 }
 
-BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config)
+BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config, const std::optional<GMC_Config> &gmc_config)
 {
     // auto tracker_params = fetch_config<TrackerParams>(
     //     tracker_config, TrackerParams::load_config);
@@ -88,14 +88,14 @@ BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config)
     // }
 
     // Global motion compensation module
-    if (_gmc_enabled)
+    if (_gmc_enabled && gmc_config)
     {
         // auto gmc_params = fetch_config<
         //     GMC_Params>(gmc_config, [this](const std::string &config_path)
         //                 { return GMC_Params::load_config(
         //                       GlobalMotionCompensation::GMC_method_map[_gmc_method_name],
         //                       config_path); });
-        _gmc_algo = std::make_unique<GlobalMotionCompensation>(gmc_params);
+        _gmc_algo = std::make_unique<GlobalMotionCompensation>(gmc_config);
     }
     else
     {

@@ -3,6 +3,7 @@
 #include <string>
 #include <variant>
 
+
 #include "BoTSORTConfig.hpp"
 #include "GlobalMotionCompensation.hpp"
 #include "GmcParams.hpp"
@@ -20,7 +21,7 @@ public:
     //                  const Config<ReIDParams> &reid_config = {},
     //                  const std::string &reid_onnx_model_path = "");
 
-    explicit BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &trackerConfig);
+    explicit BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmc_config);
 
     ~BoTSORT() = default;
 

@@ -4,8 +4,16 @@
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include <optional>
+#include <variant>
 #include <utility>
 #include <vector>
+
+#include "OrbGMCConfig.hpp"
+#include "EccGMCConfig.hpp"
+#include "SofGMCConfig.hpp"
+#include "VideoStabGMCConfig.hpp"
+#include "OptFlowGMCConfig.hpp"
+#include "GMCMethod.hpp"
 
 #include <opencv2/core.hpp>
 
@@ -13,6 +21,13 @@ constexpr uint8_t DET_ELEMENTS = 4;
 constexpr uint32_t FEATURE_DIM = 512;
 constexpr uint8_t KALMAN_STATE_SPACE_DIM = 8;
 constexpr uint8_t KALMAN_MEASUREMENT_SPACE_DIM = 4;
+
+using GMC_Config = std::variant<
+    margelo::nitro::botsort::OrbGMCConfig,
+    margelo::nitro::botsort::EccGMCConfig,
+    margelo::nitro::botsort::SofGMCConfig,
+    margelo::nitro::botsort::VideoStabGMCConfig,
+    margelo::nitro::botsort::OptFlowGMCConfig>;
 
 // Detection
 /**
