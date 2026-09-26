@@ -48,7 +48,7 @@ export interface OrbGMCConfig {
 }
 
 export interface EccGMCConfig {
-  gmc_method: GMCMethod.ORB;
+  gmc_method: GMCMethod.ECC;
   downscale?: number;
   max_iterations?: number;
   termination_eps?: number;
