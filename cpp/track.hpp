@@ -151,7 +151,7 @@ private:
      *
      * @param feat Current feature vector
      */
-    void _update_features(const std::shared_ptr<FeatureVector> &feat);
+    // void _update_features(const std::shared_ptr<FeatureVector> &feat);
 
     /**
      * @brief Populate a DetVec bbox object (xywh) from the detection bounding box (tlwh)
