@@ -2,9 +2,11 @@
 
 #include <HybridBoTSortTrackerSpec.hpp>
 // #include <motcpp/trackers/botsort.hpp>
+#include "BoTSORT.hpp"
 #include <memory>
 #include <string>
 #include <vector>
+#include "DataType.hpp"
 
 namespace margelo::nitro::botsort
 {
@@ -15,7 +17,7 @@ namespace margelo::nitro::botsort
         HybridBoTSortTracker();
         ~HybridBoTSortTracker() override = default;
 
-        void initialize(const std::string &reidModelPath, bool useGpu) override;
+        void initialize(const BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmcConfig) override;
 
         std::vector<TrackedObject> updateWithFrame(
             const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec> &frame,
@@ -23,7 +25,7 @@ namespace margelo::nitro::botsort
 
     private:
         // Fix: Instantiate utilizing the exact factory base or direct tracker interface type
-        std::unique_ptr<motcpp::trackers::BotSort> tracker;
+        std::unique_ptr<BoTSORT> tracker;
     };
 
 } // namespace margelo::nitro::botsort

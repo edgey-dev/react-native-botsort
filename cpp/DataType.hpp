@@ -12,7 +12,6 @@
 #include "EccGMCConfig.hpp"
 #include "SofGMCConfig.hpp"
 #include "VideoStabGMCConfig.hpp"
-#include "OptFlowGMCConfig.hpp"
 #include "GMCMethod.hpp"
 
 #include <opencv2/core.hpp>

@@ -114,7 +114,7 @@ android {
           externalNativeBuild {
               cmake {
                   arguments "-DCMAKE_BUILD_TYPE=Release", "-DANDROID_CPP_FEATURES=rtti exceptions"
-                  cppFlags "-flto", "-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-Os", "-fvisibility-inlines-hidden", "-Wl,--gc-sections", "-Wl,--exclude-libs,ALL"
+                  cppFlags "-flto", "-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-O3", "-fvisibility-inlines-hidden", "-Wl,--gc-sections", "-Wl,--exclude-libs,ALL"
               }
             }
         }
@@ -122,9 +122,8 @@ android {
     debug {
           externalNativeBuild {
               cmake {
-                // Do not remove "-Wl,--gc-sections", "-flto" flags, they prevent motcpp from linking a problematic static library that causes build errors
                   arguments "-DCMAKE_BUILD_TYPE=Debug", "-DANDROID_CPP_FEATURES=rtti exceptions"
-                  cppFlags "-Wl,--gc-sections", "-flto","-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-Os", "-fvisibility-inlines-hidden", "-Wl,--exclude-libs,ALL"
+                  cppFlags "-Wl,--gc-sections", "-flto","-fvisibility=hidden", "-fdata-sections", "-ffunction-sections", "-O0", "-fvisibility-inlines-hidden", "-Wl,--exclude-libs,ALL"
               }
             }
         }     

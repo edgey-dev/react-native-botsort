@@ -43,8 +43,8 @@ private:
      * @param bbox_tlwh Bounding box (top, left, width, height)
      * @return FeatureVector Extracted visual features
      */
-    FeatureVector _extract_features(const cv::Mat &frame,
-                                    const cv::Rect_<float> &bbox_tlwh);
+    // FeatureVector _extract_features(const cv::Mat &frame,
+    //                                 const cv::Rect_<float> &bbox_tlwh);
 
     /**
      * @brief Merge the given track lists
@@ -92,7 +92,7 @@ private:
     void _load_params_from_config(const margelo::nitro::botsort::BoTSORTConfig &config);
 
 private:
-    std::string _gmc_method_name;
+    // std::string _gmc_method_name;
     bool _gmc_enabled;
     uint8_t _track_buffer, _frame_rate, _buffer_size, _max_time_lost;
     float _track_high_thresh, _track_low_thresh, _new_track_thresh,

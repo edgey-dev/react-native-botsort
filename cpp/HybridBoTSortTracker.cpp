@@ -5,6 +5,7 @@
 #include <algorithm> // For std::max
 #include <stdexcept>
 
+
 #if __APPLE__
 #include <CoreVideo/CVPixelBuffer.h>
 #else
@@ -16,40 +17,9 @@ namespace margelo::nitro::botsort
 
     HybridBoTSortTracker::HybridBoTSortTracker() : HybridObject(TAG), HybridBoTSortTrackerSpec() {}
 
-    void HybridBoTSortTracker::initialize(const std::string &reidModelPath, bool useGpu)
+    void HybridBoTSortTracker::initialize(const BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmcConfig)
     {
-        tracker = std::make_unique<motcpp::trackers::BotSort>(
-            reidModelPath,
-            true,
-            useGpu,
-            0.3f,
-            30,
-            50,
-            5,
-            0.3f,
-            false,
-            80,
-            "iou",
-            false,
-            0.5f,
-            0.1f,
-            0.6f,
-            30,
-            0.8f,
-            0.5f,
-            0.25f,
-            "ecc",
-            30,
-            false,
-            false);
-
-        // tracker = std::make_unique<motcpp::trackers::OracleTrack>(
-        //     0.3f,   // det_thresh        — minimum detection confidence
-        //     30,     // max_age           — frames before a lost track is removed
-        //     3,      // min_hits          — frames before a track is confirmed
-        //     9.21f,
-        //     4.0f
-        // )
+        tracker = std::make_unique<BoTSORT>(trackerConfig, gmcConfig);
     }
 
     std::vector<TrackedObject> HybridBoTSortTracker::updateWithFrame(
@@ -60,8 +30,8 @@ namespace margelo::nitro::botsort
             return {};
 
         cv::Mat matFrame;
-        int originalWidth = 0;
-        int originalHeight = 0;
+        // int originalWidth = 0;
+        // int originalHeight = 0;
 
 // 1. Hardware Direct Video Frame Extraction & Channel Mapping
 #if __ANDROID__
@@ -72,8 +42,8 @@ namespace margelo::nitro::botsort
 
         AHardwareBuffer_Desc desc;
         AHardwareBuffer_describe(buffer, &desc);
-        originalWidth = desc.width;
-        originalHeight = desc.height;
+        // originalWidth = desc.width;
+        // originalHeight = desc.height;
 
         void *baseAddress = nullptr;
         if (AHardwareBuffer_lock(buffer, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, &baseAddress) != 0 || !baseAddress)
