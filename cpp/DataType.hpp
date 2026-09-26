@@ -24,8 +24,7 @@ constexpr uint8_t KALMAN_MEASUREMENT_SPACE_DIM = 4;
 using GMC_Config = std::variant<
     margelo::nitro::botsort::OrbGMCConfig,
     margelo::nitro::botsort::EccGMCConfig,
-    margelo::nitro::botsort::SofGMCConfig,
-    margelo::nitro::botsort::VideoStabGMCConfig>;
+    margelo::nitro::botsort::SofGMCConfig>;
 
 // Detection
 /**

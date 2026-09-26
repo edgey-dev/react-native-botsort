@@ -33,18 +33,18 @@ GlobalMotionCompensation::GlobalMotionCompensation(const GMC_Config &gmc_params)
         _gmc_algorithm = std::make_unique<SparseOptFlow_GMC>(
             std::get<SofGMCConfig>(gmc_params));
     }
-    else if (gmc_method == GMCMethod::OPTFLOWMODIFIED)
-    {
-        std::cout << "Using OptFlowModified for GMC" << std::endl;
-        _gmc_algorithm = std::make_unique<OptFlowModified_GMC>(
-            std::get<OptFlowGMCConfig>(gmc_params));
-    }
-    else if (gmc_method == GMCMethod::VIDEOSTAB)
-    {
-        std::cout << "Using OpenCV_VideoStab for GMC" << std::endl;
-        _gmc_algorithm = std::make_unique<OpenCV_VideoStab_GMC>(
-            std::get<VideoStabGMCConfig>(gmc_params));
-    }
+    // else if (gmc_method == GMCMethod::OPTFLOWMODIFIED)
+    // {
+    //     std::cout << "Using OptFlowModified for GMC" << std::endl;
+    //     _gmc_algorithm = std::make_unique<OptFlowModified_GMC>(
+    //         std::get<OptFlowGMCConfig>(gmc_params));
+    // }
+    // else if (gmc_method == GMCMethod::VIDEOSTAB)
+    // {
+    //     std::cout << "Using OpenCV_VideoStab for GMC" << std::endl;
+    //     _gmc_algorithm = std::make_unique<OpenCV_VideoStab_GMC>(
+    //         std::get<VideoStabGMCConfig>(gmc_params));
+    // }
     else
     {
         throw std::runtime_error("Unknown global motion compensation method");
@@ -448,90 +448,90 @@ SparseOptFlow_GMC::apply(const cv::Mat &frame_raw,
 }
 
 // OpenCV VideoStab
-OpenCV_VideoStab_GMC::OpenCV_VideoStab_GMC(
-    const VideoStabGMCConfig &config)
-{
-    _load_params_from_config(config);
+// OpenCV_VideoStab_GMC::OpenCV_VideoStab_GMC(
+//     const VideoStabGMCConfig &config)
+// {
+//     _load_params_from_config(config);
 
-    _motion_estimator = cv::makePtr<cv::videostab::MotionEstimatorRansacL2>(
-        cv::videostab::MM_SIMILARITY);
+//     _motion_estimator = cv::makePtr<cv::videostab::MotionEstimatorRansacL2>(
+//         cv::videostab::MM_SIMILARITY);
 
-    _keypoint_motion_estimator =
-        cv::makePtr<cv::videostab::KeypointBasedMotionEstimator>(
-            _motion_estimator);
-    _keypoint_motion_estimator->setDetector(
-        cv::GFTTDetector::create(_num_features));
-}
+//     _keypoint_motion_estimator =
+//         cv::makePtr<cv::videostab::KeypointBasedMotionEstimator>(
+//             _motion_estimator);
+//     _keypoint_motion_estimator->setDetector(
+//         cv::GFTTDetector::create(_num_features));
+// }
 
-void OpenCV_VideoStab_GMC::_load_params_from_config(
-    const VideoStabGMCConfig &config)
-{
-    _downscale = config.downscale.value_or(2.0);
-    _num_features = config.num_features.value_or(4000);
-    _detections_masking = config.detection_masking.value_or(true);
-}
+// void OpenCV_VideoStab_GMC::_load_params_from_config(
+//     const VideoStabGMCConfig &config)
+// {
+//     _downscale = config.downscale.value_or(2.0);
+//     _num_features = config.num_features.value_or(4000);
+//     _detections_masking = config.detection_masking.value_or(true);
+// }
 
-HomographyMatrix
-OpenCV_VideoStab_GMC::apply(const cv::Mat &frame_raw,
-                            const std::vector<Detection> &detections)
-{
-    // Initialization
-    int height = frame_raw.rows;
-    int width = frame_raw.cols;
+// HomographyMatrix
+// OpenCV_VideoStab_GMC::apply(const cv::Mat &frame_raw,
+//                             const std::vector<Detection> &detections)
+// {
+//     // Initialization
+//     int height = frame_raw.rows;
+//     int width = frame_raw.cols;
 
-    HomographyMatrix H;
-    H.setIdentity();
-    cv::Mat frame = frame_raw.clone();
+//     HomographyMatrix H;
+//     H.setIdentity();
+//     cv::Mat frame = frame_raw.clone();
 
-    if (frame_raw.empty())
-    {
-        return H;
-    }
+//     if (frame_raw.empty())
+//     {
+//         return H;
+//     }
 
-    // Downscale
-    if (_downscale > 1.0F)
-    {
-        width /= _downscale, height /= _downscale;
-        cv::resize(frame_raw, frame, cv::Size(width, height));
-    }
+//     // Downscale
+//     if (_downscale > 1.0F)
+//     {
+//         width /= _downscale, height /= _downscale;
+//         cv::resize(frame_raw, frame, cv::Size(width, height));
+//     }
 
-    cv::Mat homography = cv::Mat::eye(3, 3, CV_32F);
+//     cv::Mat homography = cv::Mat::eye(3, 3, CV_32F);
 
-    if (!_prev_frame.empty())
-    {
-        if (_detections_masking)
-        {
-            cv::Mat mask = cv::Mat::zeros(frame.size(), CV_8U);
-            for (const Detection &detection : detections)
-            {
-                cv::Rect rect = detection.bbox_tlwh;
-                rect.x /= _downscale;
-                rect.y /= _downscale;
-                rect.width /= _downscale;
-                rect.height /= _downscale;
-                mask(rect) = 255;
-            }
+//     if (!_prev_frame.empty())
+//     {
+//         if (_detections_masking)
+//         {
+//             cv::Mat mask = cv::Mat::zeros(frame.size(), CV_8U);
+//             for (const Detection &detection : detections)
+//             {
+//                 cv::Rect rect = detection.bbox_tlwh;
+//                 rect.x /= _downscale;
+//                 rect.y /= _downscale;
+//                 rect.width /= _downscale;
+//                 rect.height /= _downscale;
+//                 mask(rect) = 255;
+//             }
 
-            _keypoint_motion_estimator->setFrameMask(mask);
-        }
+//             _keypoint_motion_estimator->setFrameMask(mask);
+//         }
 
-        bool ok;
-        homography =
-            _keypoint_motion_estimator->estimate(_prev_frame, frame, &ok);
+//         bool ok;
+//         homography =
+//             _keypoint_motion_estimator->estimate(_prev_frame, frame, &ok);
 
-        if (ok)
-        {
-            cv2eigen(homography, H);
-            if (_downscale > 1.0)
-            {
-                H(0, 2) *= _downscale;
-                H(1, 2) *= _downscale;
-            }
-        }
-    }
+//         if (ok)
+//         {
+//             cv2eigen(homography, H);
+//             if (_downscale > 1.0)
+//             {
+//                 H(0, 2) *= _downscale;
+//                 H(1, 2) *= _downscale;
+//             }
+//         }
+//     }
 
-    frame.copyTo(_prev_frame);
-    homography.copyTo(_prev_homography);
-    return H;
-}
+//     frame.copyTo(_prev_frame);
+//     homography.copyTo(_prev_homography);
+//     return H;
+// }
 

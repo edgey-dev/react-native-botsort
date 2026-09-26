@@ -23,7 +23,6 @@ export enum GMCMethod {
   ORB,
   ECC,
   SOF,
-  VideoStab,
 }
 
 export interface BoTSORTConfig {
@@ -69,20 +68,12 @@ export interface SofGMCConfig {
   ransac_max_iters?: number;
 }
 
-export interface VideoStabGMCConfig {
-  gmc_method: GMCMethod.VideoStab;
-  downscale?: number;
-  num_features?: number;
-  detections_masking?: boolean;
-}
-
-export type GMCConfig =
-  OrbGMCConfig | EccGMCConfig | SofGMCConfig | VideoStabGMCConfig;
+export type GMCConfig = OrbGMCConfig | EccGMCConfig | SofGMCConfig;
 
 export interface BoTSortTracker extends HybridObject<{
   ios: 'c++';
   android: 'c++';
 }> {
   initialize(trackerConfig: BoTSORTConfig, gmcConfig?: GMCConfig): void;
-  updateWithFrame(frame: Frame, detections: BoundingBox[]): TrackedObject[];
+  track(frame: Frame, detections: BoundingBox[]): TrackedObject[];
 }

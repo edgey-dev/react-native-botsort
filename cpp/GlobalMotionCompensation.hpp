@@ -99,29 +99,29 @@ private:
     float _inlier_ratio, _ransac_conf;
 };
 
-class OpenCV_VideoStab_GMC : public GMC_Algorithm
-{
-public:
-    explicit OpenCV_VideoStab_GMC(const VideoStabGMCConfig &config);
-    HomographyMatrix apply(const cv::Mat &frame_raw,
-                           const std::vector<Detection> &detections) override;
+// class OpenCV_VideoStab_GMC : public GMC_Algorithm
+// {
+// public:
+//     explicit OpenCV_VideoStab_GMC(const VideoStabGMCConfig &config);
+//     HomographyMatrix apply(const cv::Mat &frame_raw,
+//                            const std::vector<Detection> &detections) override;
 
-private:
-    void _load_params_from_config(const VideoStabGMCConfig &config);
+// private:
+//     void _load_params_from_config(const VideoStabGMCConfig &config);
 
-private:
-    std::string _algo_name = "OpenCV_VideoStab";
-    float _downscale;
-    int _num_features;
-    bool _detections_masking;
+// private:
+//     std::string _algo_name = "OpenCV_VideoStab";
+//     float _downscale;
+//     int _num_features;
+//     bool _detections_masking;
 
-    cv::Mat _prev_frame;
-    cv::Mat _prev_homography;
+//     cv::Mat _prev_frame;
+//     cv::Mat _prev_homography;
 
-    cv::Ptr<cv::videostab::MotionEstimatorRansacL2> _motion_estimator;
-    cv::Ptr<cv::videostab::KeypointBasedMotionEstimator>
-        _keypoint_motion_estimator;
-};
+//     cv::Ptr<cv::videostab::MotionEstimatorRansacL2> _motion_estimator;
+//     cv::Ptr<cv::videostab::KeypointBasedMotionEstimator>
+//         _keypoint_motion_estimator;
+// };
 
 class GlobalMotionCompensation
 {

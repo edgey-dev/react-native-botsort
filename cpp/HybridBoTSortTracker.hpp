@@ -19,7 +19,7 @@ namespace margelo::nitro::botsort
 
         void initialize(const BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmcConfig) override;
 
-        std::vector<TrackedObject> updateWithFrame(
+        std::vector<TrackedObject> track(
             const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec> &frame,
             const std::vector<BoundingBox> &detections) override;
 
