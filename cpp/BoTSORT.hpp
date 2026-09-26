@@ -6,8 +6,6 @@
 
 #include "BoTSORTConfig.hpp"
 #include "GlobalMotionCompensation.hpp"
-#include "GmcParams.hpp"
-#include "TrackerParams.hpp"
 #include "track.hpp"
 
 template <typename T>
