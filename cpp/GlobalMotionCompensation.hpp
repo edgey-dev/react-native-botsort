@@ -14,8 +14,8 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/videostab.hpp>
-#include <opencv2/videostab/global_motion.hpp>
+// #include <opencv2/videostab.hpp>
+// #include <opencv2/videostab/global_motion.hpp>
 
 using namespace margelo::nitro::botsort;
 

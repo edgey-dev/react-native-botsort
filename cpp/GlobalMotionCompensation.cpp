@@ -1,7 +1,7 @@
 #include "GlobalMotionCompensation.hpp"
 
-#include <opencv2/videostab/global_motion.hpp>
-#include <opencv2/videostab/motion_core.hpp>
+// #include <opencv2/videostab/global_motion.hpp>
+// #include <opencv2/videostab/motion_core.hpp>
 
 // std::map<std::string, GMC_Method> GlobalMotionCompensation::GMC_method_map = {
 //     {"orb", GMC_Method::ORB},

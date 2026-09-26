@@ -11,7 +11,7 @@
 #include "OrbGMCConfig.hpp"
 #include "EccGMCConfig.hpp"
 #include "SofGMCConfig.hpp"
-#include "VideoStabGMCConfig.hpp"
+// #include "VideoStabGMCConfig.hpp"
 #include "GMCMethod.hpp"
 
 #include <opencv2/core.hpp>
