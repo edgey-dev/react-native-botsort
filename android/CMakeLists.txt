@@ -18,7 +18,7 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(EIGEN_BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(EIGEN_BUILD_BTL OFF CACHE BOOL "" FORCE)
 set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(Eigen3)
+FetchContent_Populate(Eigen3)
 
 # Eigen 3.4 always declares BLAS/LAPACK and spbench targets. Android's
 # externalNativeBuild tries to compile every declared target, so remove those

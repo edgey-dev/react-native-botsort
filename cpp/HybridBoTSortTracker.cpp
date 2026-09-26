@@ -79,8 +79,8 @@ namespace margelo::nitro::botsort
             return {};
         }
 
-        originalWidth = (int)CVPixelBufferGetWidth(pixelBuffer);
-        originalHeight = (int)CVPixelBufferGetHeight(pixelBuffer);
+        // originalWidth = (int)CVPixelBufferGetWidth(pixelBuffer);
+        // originalHeight = (int)CVPixelBufferGetHeight(pixelBuffer);
 
         if (CVPixelBufferIsPlanar(pixelBuffer))
         {
@@ -98,7 +98,8 @@ namespace margelo::nitro::botsort
 #endif
 
         // Mathematical Division-by-Zero / Frame Empty Safety Gate
-        if (originalWidth <= 0 || originalHeight <= 0 || matFrame.empty())
+        // if (originalWidth <= 0 || originalHeight <= 0 || matFrame.empty())
+        if (matFrame.empty())
         {
 #if __ANDROID__
             AHardwareBuffer_unlock(buffer, nullptr);
