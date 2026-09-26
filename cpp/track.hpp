@@ -28,7 +28,7 @@ public:
      * @param feat (Optional) Detection feature vector
      * @param feat_history_size Size of the feature history (default: 50)
      */
-    Track(std::vector<float> tlwh, float score, uint8_t class_id,
+    Track(std::vector<float> tlwh, float score, uint8_t class_id
         //   std::optional<FeatureVector> feat = std::nullopt,
         //   int feat_history_size = 50
         );

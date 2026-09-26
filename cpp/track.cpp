@@ -2,7 +2,7 @@
 
 #include <utility>
 
-Track::Track(std::vector<float> tlwh, float score, uint8_t class_id,
+Track::Track(std::vector<float> tlwh, float score, uint8_t class_id
              //  std::optional<FeatureVector> feat, int feat_history_size
              )
     : det_tlwh(std::move(tlwh)), _score(score), _class_id(class_id),
