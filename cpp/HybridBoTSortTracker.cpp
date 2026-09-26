@@ -137,7 +137,7 @@ namespace margelo::nitro::botsort
 
         // 4. Update the tracker tracking matrices
         // Eigen::MatrixXf tracks = tracker->update(scaledDets, lowResFrame);
-        const std::vector<Detection> tracker_detections;
+        std::vector<Detection> tracker_detections;
         for (auto &detection : detections)
         {
             Detection tracker_detection;
@@ -158,8 +158,7 @@ namespace margelo::nitro::botsort
         CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 #endif
 
-        
-        std::vector<TrackedObject> nativeResults;
+                std::vector<TrackedObject> nativeResults;
         for (auto &track : tracks)
         {
             // float trackedX1 = tracks(i, 0) * scaleFactorX;

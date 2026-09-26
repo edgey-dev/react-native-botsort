@@ -45,15 +45,15 @@ struct Detection
     float confidence;
 };
 
-// Re-ID Features
-/**
- * @brief Re-ID feature vector with FEATURE_DIM elements.
- */
-using FeatureVector = Eigen::Matrix<float, 1, FEATURE_DIM>;
-/**
- * @brief Re-ID feature matrix with dynamic rows and FEATURE_DIM columns.
- */
-using FeatureMatrix = Eigen::Matrix<float, Eigen::Dynamic, FEATURE_DIM>;
+// // Re-ID Features
+// /**
+//  * @brief Re-ID feature vector with FEATURE_DIM elements.
+//  */
+// using FeatureVector = Eigen::Matrix<float, 1, FEATURE_DIM>;
+// /**
+//  * @brief Re-ID feature matrix with dynamic rows and FEATURE_DIM columns.
+//  */
+// using FeatureMatrix = Eigen::Matrix<float, Eigen::Dynamic, FEATURE_DIM>;
 
 // Kalman Filter
 /**
