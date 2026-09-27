@@ -17,7 +17,7 @@ import { botsort, GMCMethod } from 'react-native-botsort';
 
 // ...
 
-botsort.initialize({ enable_gmc: true}, { gmc_method: GMCMethod::SOF});
+botsort.initialize({ enable_gmc: true}, { gmc_method: GMCMethod.SOF});
 
 botsort.track(frame, detectionBox)
 ```
