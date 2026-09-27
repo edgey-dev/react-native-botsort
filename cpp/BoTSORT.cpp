@@ -54,9 +54,9 @@ void BoTSORT::_load_params_from_config(const margelo::nitro::botsort::BoTSORTCon
     _track_buffer = config.track_buffer.value_or(30);
     _match_thresh = config.match_thresh.value_or(0.7);
     _proximity_thresh = config.proximity_thresh.value_or(0.5);
-    _appearance_thresh = config.appearance_thresh.value_or(0.25);
+    //  _appearance_thresh = config.appearance_thresh.value_or(0.25);
     _frame_rate = config.frame_rate.value_or(30);
-    _lambda = config.lambda.value_or(0.985);
+    // _lambda = config.lambda.value_or(0.985);
 }
 
 BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config, const std::optional<GMC_Config> &gmc_config)
