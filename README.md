@@ -1,9 +1,8 @@
 # react-native-botsort
 
-A react native library created with Nitro that implements the BoTSORT tracking algorthim
+A react native library created with Nitro that implements a stripped down BoTSORT tracking algorthim made for mobile inference
 
 ## Installation
-
 
 ```sh
 npm install react-native-botsort react-native-nitro-modules
@@ -11,18 +10,17 @@ npm install react-native-botsort react-native-nitro-modules
 > `react-native-nitro-modules` is required as this library relies on [Nitro Modules](https://nitro.margelo.com/).
 ```
 
-
 ## Usage
 
-
 ```js
-import { multiply } from 'react-native-botsort';
+import { botsort, GMCMethod } from 'react-native-botsort';
 
 // ...
 
-const result = multiply(3, 7);
-```
+botsort.initialize({ enable_gmc: true}, { gmc_method: GMCMethod::SOF});
 
+botsort.track(frame, detectionBox)
+```
 
 ## Contributing
 
