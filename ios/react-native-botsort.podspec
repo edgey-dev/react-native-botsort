@@ -8,18 +8,16 @@ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 root = __dir__
 opencv_xcframework = File.join(root, "opencv-mobile.xcframework")
-motcpp_src = File.join(root, "motcpp-src")
-motcpp_lib = File.join(motcpp_src, "build", "libmotcpp.a")
 
 def run!(cmd)
-  puts "[react-native-nitro-botsort] #{cmd}"
-  system(cmd) || raise("[react-native-nitro-botsort] command failed: #{cmd}")
+  puts "[react-native-botsort] #{cmd}"
+  system(cmd) || raise("[react-native-botsort] command failed: #{cmd}")
 end
 
 unless File.directory?(opencv_xcframework)
   Dir.chdir(root) do
-    opencv_version = "v36"
-    opencv_pkg = "opencv-mobile-2.4.13.7"
+    opencv_version = "v34"
+    opencv_pkg = "opencv-mobile-4.12.0"
 
     run!("curl -sSfL -o ios.zip https://github.com/nihui/opencv-mobile/releases/download/#{opencv_version}/#{opencv_pkg}-ios.zip")
     run!("curl -sSfL -o ios-sim.zip https://github.com/nihui/opencv-mobile/releases/download/#{opencv_version}/#{opencv_pkg}-ios-simulator.zip")
@@ -33,44 +31,29 @@ unless File.directory?(opencv_xcframework)
   end
 end
 
-unless File.exist?(motcpp_lib)
-  Dir.chdir(root) do
-    run!("git clone --depth 1 --branch main https://github.com/Geekgineer/motcpp.git motcpp-src") unless File.directory?(motcpp_src)
-    run!("cmake -S motcpp-src -B motcpp-src/build " \
-         "-DCMAKE_SYSTEM_NAME=iOS " \
-         "-DCMAKE_OSX_DEPLOYMENT_TARGET=15.1 " \
-         "-DCMAKE_BUILD_TYPE=Release " \
-         "-DMOTCPP_BUILD_TESTS=OFF")
-    run!("cmake --build motcpp-src/build --config Release -j$(sysctl -n hw.ncpu)")
-  end
-end
-
 Pod::Spec.new do |s|
   s.name         = "react-native-botsort"
   s.version      = package["version"]
   s.summary      = "BoT-SORT Multi-Object Tracking Engine"
-  s.homepage     = "https://github.com/<your-org>/react-native-nitro-botsort"
-  s.license      = { :type => "AGPL-3.0", :text => "See LICENSE — this pod links motcpp (AGPL-3.0); combined-work obligations apply to consumers." }
-  s.authors      = { "Developer" => "dev@domain.com" }
+  s.homepage     = "https://github.com/edgey-dev/react-native-botsort"
+  s.license      = { :type => "MIT", :text => "See LICENSE." }
+  s.authors      = { "Developer" => "juwonchina@gmail.com" }
   s.platforms    = { :ios => "15.1" }
-  s.source       = { :git => "https://github.com/<your-org>/react-native-nitro-botsort.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/edgey-dev/react-native-botsort.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}",
                     "cpp/**/*.{hpp,cpp}",
                     "nitrogen/generated/ios/**/*.{h,m,mm,hpp,cpp}"
 
   s.dependency "react-native-nitro-modules"
-  s.dependency "onnxruntime-c", "~> 1.18.0"
+  s.dependency "react-native-vision-camera"
   s.dependency "Eigen", "~> 3.4"
-  s.dependency "yaml-cpp"
 
   s.vendored_frameworks = "opencv-mobile.xcframework"
-  s.vendored_libraries  = motcpp_lib
-  s.header_mappings_dir = "motcpp-src/include"
 
   s.pod_target_xcconfig = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-    "HEADER_SEARCH_PATHS" => '"$(PODS_TARGET_SRCROOT)/../cpp" "$(PODS_TARGET_SRCROOT)/motcpp-src/include"',
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "HEADER_SEARCH_PATHS" => '"$(PODS_TARGET_SRCROOT)/../cpp"',
 
     "GCC_OPTIMIZATION_LEVEL" => "3",
     "LLVM_LTO" => "YES",
