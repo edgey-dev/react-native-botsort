@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <Eigen/Core>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
 #include <optional>
 #include <variant>
 #include <utility>
@@ -95,7 +95,7 @@ using HomographyMatrix = Eigen::Matrix<float, 3, 3>;
 // /**
 //  * @brief Tracker data containing a track ID and a feature vector.
 //  */
-using TrackerData = std::pair<int, FeatureVector>;
+// using TrackerData = std::pair<int, FeatureVector>;
 /**
  * @brief Match data containing a track ID and a detection ID.
  */
