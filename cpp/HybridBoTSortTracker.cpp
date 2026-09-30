@@ -137,6 +137,7 @@ namespace margelo::nitro::botsort
 
         // 4. Update the tracker tracking matrices
         // Eigen::MatrixXf tracks = tracker->update(scaledDets, lowResFrame);
+        
         std::vector<Detection> tracker_detections;
         for (auto &detection : detections)
         {

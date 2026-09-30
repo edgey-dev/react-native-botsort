@@ -7,8 +7,8 @@
 #include "GlobalMotionCompensation.hpp"
 #include "track.hpp"
 
-template <typename T>
-using Config = std::variant<T, std::string, std::monostate>;
+// template <typename T>
+// using Config = std::variant<T, std::string, std::monostate>;
 
 class BoTSORT
 {

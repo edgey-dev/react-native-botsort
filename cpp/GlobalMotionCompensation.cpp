@@ -210,7 +210,7 @@ HomographyMatrix ORB_GMC::apply(const cv::Mat &frame_raw,
         if (inlier_ratio > _inlier_ratio)
         {
             cv2eigen(homography, H);
-            if (_downs cale > 1.0)
+            if (_downscale > 1.0)
             {
                 H(0, 2) *= _downscale;
                 H(1, 2) *= _downscale;

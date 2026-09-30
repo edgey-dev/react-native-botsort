@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-custom-opencv:
+  build-android-opencv:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -80,5 +80,67 @@ jobs:
           tag_name: opencv-botsort-4.12.0
           name: OpenCV 4.12.0 custom Android build
           files: ${{ github.workspace }}/opencv-mobile-4.12.0-android-arm64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-ios-opencv:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Clone OpenCV mobile Source Code
+        run: |
+          wget -q https://github.com/nihui/opencv-mobile/releases/download/v34/opencv-mobile-4.12.0.zip
+          unzip -q opencv-mobile-4.12.0.zip
+
+      - name: Replace UMat with Mat everywhere
+        run: |
+          cd opencv-mobile-4.12.0
+          find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
+            -exec sed -i 's/\bUMat\b/Mat/g' {} +
+
+      - name: Build custom OpenCV-build
+        run: |
+          cd opencv-mobile-4.12.0
+          mkdir build
+          cd build
+
+          cmake \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+            -DCMAKE_TOOLCHAIN_FILE=../../toolchains/ios.toolchain.cmake \
+            -DPLATFORM=OS \
+            -DDEPLOYMENT_TARGET=$IOS_DEPLOYMENT_TARGET \
+            -DENABLE_BITCODE=$ENABLE_BITCODE \
+            -DENABLE_ARC=$ENABLE_ARC \
+            -DENABLE_VISIBILITY=$ENABLE_VISIBILITY \
+            -DCMAKE_C_FLAGS="-fno-rtti -fno-exceptions" \
+            -DCMAKE_CXX_FLAGS="-fno-rtti -fno-exceptions" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
+            -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections" \
+            -DCMAKE_CXX_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections"  \
+            `cat "$GITHUB_WORKSPACE/.github/opencv/options.txt"` \
+            -DBUILD_opencv_world=OFF \
+            -DOPENCV_EXTRA_FLAGS="-mno-outline-atomics" \
+            ..
+          make -j4
+          make install
+
+      - name: Create custom opencv build release zip archive
+        run: |
+          cd install
+          zip -r $GITHUB_WORKSPACE/opencv-mobile-4.12.0-ios.zip . \
+            -x "**/build/*"
+
+      - name: Upload ZIP to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: opencv-botsort-4.12.0
+          name: OpenCV 4.12.0 custom IOS build
+          files: ${{ github.workspace }}/opencv-mobile-4.12.0-ios.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

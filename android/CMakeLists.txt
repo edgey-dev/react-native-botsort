@@ -163,7 +163,7 @@ target_link_libraries(
         android                                   # <-- Android core
         react-native-vision-camera::VisionCamera
         ${OpenCV_LIBS}
-        Eigen3
+        Eigen3::Eigen
 )
 
 # target_compile_options(${PACKAGE_NAME} PRIVATE)
