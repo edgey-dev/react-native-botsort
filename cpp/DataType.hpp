@@ -91,10 +91,10 @@ using KFDataMeasurementSpace = std::pair<KFMeasSpaceVec, KFMeasSpaceMatrix>;
  */
 using HomographyMatrix = Eigen::Matrix<float, 3, 3>;
 
-// Tracker
-/**
- * @brief Tracker data containing a track ID and a feature vector.
- */
+// // Tracker
+// /**
+//  * @brief Tracker data containing a track ID and a feature vector.
+//  */
 using TrackerData = std::pair<int, FeatureVector>;
 /**
  * @brief Match data containing a track ID and a detection ID.
