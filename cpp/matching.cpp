@@ -1,7 +1,7 @@
 #include "matching.hpp"
 
-#include "DataType.h"
-#include "utils.h"
+#include "DataType.hpp"
+#include "utils.hpp"
 
 std::tuple<CostMatrix, CostMatrix>
 iou_distance(const std::vector<std::shared_ptr<Track>> &tracks,
