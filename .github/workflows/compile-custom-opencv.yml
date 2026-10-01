@@ -27,7 +27,7 @@ jobs:
         run: |
           cd opencv-mobile-4.12.0
           find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
-            -exec sed -i 's/\bUMat\b/Mat/g' {} +
+            -exec perl -pi -e 's/\bUMat\b/Mat/g' {} +
 
       - name: Build custom OpenCV-build
         run: |
