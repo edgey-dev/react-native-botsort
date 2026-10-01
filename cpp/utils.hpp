@@ -9,11 +9,11 @@
  * @param y Feature vector 2
  * @return float Cosine distance (1 - cosine similarity)
  */
-inline float cosine_distance(const std::unique_ptr<FeatureVector> &x,
-                             const std::shared_ptr<FeatureVector> &y)
-{
-    return 1.0f - (x->dot(*y) / (x->norm() * y->norm() + 1e-5f));
-}
+// inline float cosine_distance(const std::unique_ptr<FeatureVector> &x,
+//                              const std::shared_ptr<FeatureVector> &y)
+// {
+//     return 1.0f - (x->dot(*y) / (x->norm() * y->norm() + 1e-5f));
+// }
 
 /**
  * @brief Calculate the euclidean distance between two feature vectors
@@ -22,11 +22,11 @@ inline float cosine_distance(const std::unique_ptr<FeatureVector> &x,
  * @param y Feature vector 2
  * @return float Euclidean distance
  */
-inline float euclidean_distance(const std::unique_ptr<FeatureVector> &x,
-                                const std::shared_ptr<FeatureVector> &y)
-{
-    return (x->transpose() - y->transpose()).norm();
-}
+// inline float euclidean_distance(const std::unique_ptr<FeatureVector> &x,
+//                                 const std::shared_ptr<FeatureVector> &y)
+// {
+//     return (x->transpose() - y->transpose()).norm();
+// }
 
 /**
  * @brief Calculate the intersection over union (IoU) between two bounding boxes

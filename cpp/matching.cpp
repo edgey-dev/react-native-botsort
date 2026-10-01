@@ -62,56 +62,56 @@ CostMatrix iou_distance(const std::vector<std::shared_ptr<Track>> &tracks,
     return cost_matrix;
 }
 
-std::tuple<CostMatrix, CostMatrix>
-embedding_distance(const std::vector<std::shared_ptr<Track>> &tracks,
-                   const std::vector<std::shared_ptr<Track>> &detections,
-                   float max_embedding_distance,
-                   const std::string &distance_metric)
-{
-    if (!(distance_metric == "euclidean" || distance_metric == "cosine"))
-    {
-        std::cout << "Invalid distance metric " << distance_metric
-                  << " passed.";
-        std::cout << "Only 'euclidean' and 'cosine' are supported."
-                  << std::endl;
-        exit(1);
-    }
+// std::tuple<CostMatrix, CostMatrix>
+// embedding_distance(const std::vector<std::shared_ptr<Track>> &tracks,
+//                    const std::vector<std::shared_ptr<Track>> &detections,
+//                    float max_embedding_distance,
+//                    const std::string &distance_metric)
+// {
+//     if (!(distance_metric == "euclidean" || distance_metric == "cosine"))
+//     {
+//         std::cout << "Invalid distance metric " << distance_metric
+//                   << " passed.";
+//         std::cout << "Only 'euclidean' and 'cosine' are supported."
+//                   << std::endl;
+//         exit(1);
+//     }
 
-    size_t num_tracks = tracks.size();
-    size_t num_detections = detections.size();
+//     size_t num_tracks = tracks.size();
+//     size_t num_detections = detections.size();
 
-    CostMatrix cost_matrix =
-            Eigen::MatrixXf::Zero(static_cast<Eigen::Index>(num_tracks),
-                                  static_cast<Eigen::Index>(num_detections));
-    CostMatrix embedding_dists_mask =
-            Eigen::MatrixXf::Zero(static_cast<Eigen::Index>(num_tracks),
-                                  static_cast<Eigen::Index>(num_detections));
+//     CostMatrix cost_matrix =
+//             Eigen::MatrixXf::Zero(static_cast<Eigen::Index>(num_tracks),
+//                                   static_cast<Eigen::Index>(num_detections));
+//     CostMatrix embedding_dists_mask =
+//             Eigen::MatrixXf::Zero(static_cast<Eigen::Index>(num_tracks),
+//                                   static_cast<Eigen::Index>(num_detections));
 
-    if (num_tracks > 0 && num_detections > 0)
-    {
-        for (int i = 0; i < num_tracks; i++)
-        {
-            for (int j = 0; j < num_detections; j++)
-            {
-                if (distance_metric == "euclidean")
-                    cost_matrix(i, j) = std::max(
-                            0.0f, euclidean_distance(tracks[i]->smooth_feat,
-                                                     detections[j]->curr_feat));
-                else
-                    cost_matrix(i, j) = std::max(
-                            0.0f, cosine_distance(tracks[i]->smooth_feat,
-                                                  detections[j]->curr_feat));
+//     if (num_tracks > 0 && num_detections > 0)
+//     {
+//         for (int i = 0; i < num_tracks; i++)
+//         {
+//             for (int j = 0; j < num_detections; j++)
+//             {
+//                 if (distance_metric == "euclidean")
+//                     cost_matrix(i, j) = std::max(
+//                             0.0f, euclidean_distance(tracks[i]->smooth_feat,
+//                                                      detections[j]->curr_feat));
+//                 else
+//                     cost_matrix(i, j) = std::max(
+//                             0.0f, cosine_distance(tracks[i]->smooth_feat,
+//                                                   detections[j]->curr_feat));
 
-                if (cost_matrix(i, j) > max_embedding_distance)
-                {
-                    embedding_dists_mask(i, j) = 1.0F;
-                }
-            }
-        }
-    }
+//                 if (cost_matrix(i, j) > max_embedding_distance)
+//                 {
+//                     embedding_dists_mask(i, j) = 1.0F;
+//                 }
+//             }
+//         }
+//     }
 
-    return {cost_matrix, embedding_dists_mask};
-}
+//     return {cost_matrix, embedding_dists_mask};
+// }
 
 void fuse_score(CostMatrix &cost_matrix,
                 const std::vector<std::shared_ptr<Track>> &detections)
@@ -254,7 +254,7 @@ AssociationData linear_assignment(CostMatrix &cost_matrix, float thresh)
     }
 
     std::vector<int> rowsol, colsol;
-    double total_cost = lapjv(cost_matrix, rowsol, colsol, true, thresh);
+    lapjv(cost_matrix, rowsol, colsol, true, thresh);
 
     for (int i = 0; i < rowsol.size(); i++)
     {

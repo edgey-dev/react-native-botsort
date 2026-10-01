@@ -1,6 +1,6 @@
 #include "KalmanFilter.hpp"
 
-#include <eigen3/Eigen/Cholesky>
+#include <Eigen/Cholesky>
 
 namespace bot_kalman
 {
