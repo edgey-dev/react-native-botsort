@@ -95,7 +95,7 @@ BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config, c
         //                 { return GMC_Params::load_config(
         //                       GlobalMotionCompensation::GMC_method_map[_gmc_method_name],
         //                       config_path); });
-        _gmc_algo = std::make_unique<GlobalMotionCompensation>(gmc_config);
+        _gmc_algo = std::make_unique<GlobalMotionCompensation>(gmc_config.value());
     }
     else
     {

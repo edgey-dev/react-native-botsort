@@ -140,9 +140,15 @@ find_package(OpenCV REQUIRED core imgproc features2d video calib3d)
 # include below adds your tracker source + generated OnLoad.cpp to THIS target.
 add_library(${PACKAGE_NAME} SHARED
         src/main/cpp/cpp-adapter.cpp
+        ../cpp/BoTSORT.cpp
+        ../cpp/GlobalMotionCompensation.cpp
         ../cpp/HybridBoTSortTracker.cpp
+        ../cpp/KalmanFilter.cpp
+        ../cpp/lapjv.cpp
+        ../cpp/matching.cpp
+        ../cpp/track.cpp
+        ../cpp/utils.cpp
 )
-
 # Add Nitrogen specs :)
 # This filename must match the generated file exactly, including case.
 include(${CMAKE_SOURCE_DIR}/../nitrogen/generated/android/NitroBotsort+autolinking.cmake)
