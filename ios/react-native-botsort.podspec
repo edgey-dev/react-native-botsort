@@ -48,9 +48,7 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig = {
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-    "HEADER_SEARCH_PATHS" => '"$(inherited)"
-		"$(PODS_TARGET_SRCROOT)/../cpp"
-		"$(PODS_ROOT)/eigen3/Eigen" ',
+    "HEADER_SEARCH_PATHS" => '"$(inherited)" "$(PODS_TARGET_SRCROOT)/../cpp" "$(PODS_ROOT)/Headers/Public" "$(PODS_ROOT)/Headers/Public/eigen3" "$(PODS_ROOT)/eigen3" "$(PODS_ROOT)/eigen3/Eigen"',
 
     "GCC_OPTIMIZATION_LEVEL" => "3",
     "LLVM_LTO" => "YES",
