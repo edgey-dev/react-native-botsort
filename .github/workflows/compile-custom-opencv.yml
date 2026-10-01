@@ -117,8 +117,6 @@ jobs:
             -DENABLE_BITCODE=$ENABLE_BITCODE \
             -DENABLE_ARC=$ENABLE_ARC \
             -DENABLE_VISIBILITY=$ENABLE_VISIBILITY \
-            -DCMAKE_C_FLAGS="-fno-rtti -fno-exceptions" \
-            -DCMAKE_CXX_FLAGS="-fno-rtti -fno-exceptions" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
             -DCMAKE_C_FLAGS_RELEASE="-Os -fdata-sections -ffunction-sections" \
