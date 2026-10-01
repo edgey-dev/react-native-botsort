@@ -113,7 +113,7 @@ jobs:
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -DCMAKE_TOOLCHAIN_FILE=../toolchains/ios.toolchain.cmake \
             -DPLATFORM=OS \
-            -DDEPLOYMENT_TARGET=$IOS_DEPLOYMENT_TARGET \
+            -DDEPLOYMENT_TARGET=13.0 \
             -DENABLE_BITCODE=$ENABLE_BITCODE \
             -DENABLE_ARC=$ENABLE_ARC \
             -DENABLE_VISIBILITY=$ENABLE_VISIBILITY \
