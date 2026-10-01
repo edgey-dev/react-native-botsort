@@ -111,7 +111,7 @@ jobs:
 
           cmake \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-            -DCMAKE_TOOLCHAIN_FILE=../../toolchains/ios.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=../toolchains/ios.toolchain.cmake \
             -DPLATFORM=OS \
             -DDEPLOYMENT_TARGET=$IOS_DEPLOYMENT_TARGET \
             -DENABLE_BITCODE=$ENABLE_BITCODE \
