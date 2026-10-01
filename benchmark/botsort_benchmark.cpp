@@ -296,14 +296,13 @@ int main(int argc, char **argv)
     botsort::BoTSORTConfig trackerConfig;
     trackerConfig.enable_gmc = true;
     botsort::SofGMCConfig gmcConfig;
+    gmcConfig.gmc_method = botsort::GMCMethod::SOF;
 
 
     // Initialize BoTSORT tracker
     std::unique_ptr<BoTSORT> tracker;
     if (argc == 4)
     {
-        std::cout << "Using default config path: ../config/tracker.ini"
-                  << std::endl;
         tracker = std::make_unique<BoTSORT>(trackerConfig, gmcConfig);
     }
     // else

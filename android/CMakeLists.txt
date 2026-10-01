@@ -83,7 +83,7 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 FetchContent_Declare(
   opencv_mobile_android
   URL https://github.com/edgey-dev/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-android-arm64.zip
-  URL_HASH SHA256=90ee9e647344b22eacca06d03c938501fef0d60a7f3198567c10d606eea60c0f
+  URL_HASH SHA256=145ceb2988324d7097c8853d985a775ca29f2bc2e5e75511ca893ffa1733c4ad
 )
 FetchContent_MakeAvailable(opencv_mobile_android)
 
@@ -171,9 +171,6 @@ target_link_libraries(
         ${OpenCV_LIBS}
         Eigen3::Eigen
 )
-
-# target_compile_options(${PACKAGE_NAME} PRIVATE)
-# target_link_options(${PACKAGE_NAME} PRIVATE)
 
 # Export only the explicit initialization hook required by Nitro's JSI runtime loader
 set_target_properties(${PACKAGE_NAME} PROPERTIES

@@ -16,18 +16,13 @@ end
 
 unless File.directory?(opencv_xcframework)
   Dir.chdir(root) do
-    opencv_version = "v34"
-    opencv_pkg = "opencv-mobile-4.12.0"
 
-    run!("curl -sSfL -o ios.zip https://github.com/nihui/opencv-mobile/releases/download/#{opencv_version}/#{opencv_pkg}-ios.zip")
-    run!("curl -sSfL -o ios-sim.zip https://github.com/nihui/opencv-mobile/releases/download/#{opencv_version}/#{opencv_pkg}-ios-simulator.zip")
+    run!("curl -sSfL -o ios.zip https://github.com/edgey-dev/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-ios.zip")
     run!("unzip -q -o ios.zip -d ios_device")
-    run!("unzip -q -o ios-sim.zip -d ios_simulator")
     run!("xcodebuild -create-xcframework " \
          "-framework ios_device/opencv2.framework " \
-         "-framework ios_simulator/opencv2.framework " \
          "-output #{opencv_xcframework}")
-    run!("rm -rf ios.zip ios-sim.zip ios_device ios_simulator")
+    run!("rm -rf ios.zip ios_device")
   end
 end
 
@@ -55,7 +50,7 @@ Pod::Spec.new do |s|
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
     "HEADER_SEARCH_PATHS" => '"$(inherited)"
 		"$(PODS_TARGET_SRCROOT)/../cpp"
-		"$(PODS_ROOT)/Eigen/eigen3" ',
+		"$(PODS_ROOT)/eigen3/Eigen" ',
 
     "GCC_OPTIMIZATION_LEVEL" => "3",
     "LLVM_LTO" => "YES",

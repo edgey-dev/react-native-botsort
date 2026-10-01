@@ -25,7 +25,7 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ../cpp
-    ../nitrogen/generated/shared/c++
+    ./nitro_mirror/include
     ${OpenCV_INCLUDE_DIRS}
 )
 
@@ -34,4 +34,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${OpenCV_LIBS}
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE PROFILE=1)
+target_compile_definitions(${PROJECT_NAME} PRIVATE PROFILE=1 O3)
