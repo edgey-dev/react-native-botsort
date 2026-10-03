@@ -3,12 +3,58 @@
 #include <opencv2/imgproc.hpp>
 #include <Eigen/Dense>
 #include <algorithm> // For std::max
+#include <cstdint>
+#include <functional>
 #include <stdexcept>
+#include <utility>
 
 #if __APPLE__
 #include <CoreVideo/CVPixelBuffer.h>
 #else
 #include <android/hardware_buffer.h>
+#endif
+
+#if __APPLE__
+namespace
+{
+    class NativeBufferReleaseGuard
+    {
+    public:
+        explicit NativeBufferReleaseGuard(std::function<void()> release) : release(std::move(release)) {}
+        ~NativeBufferReleaseGuard() { releaseNow(); }
+
+        void releaseNow()
+        {
+            if (release)
+            {
+                release();
+                release = {};
+            }
+        }
+
+    private:
+        std::function<void()> release;
+    };
+
+    class PixelBufferUnlockGuard
+    {
+    public:
+        explicit PixelBufferUnlockGuard(CVPixelBufferRef pixelBuffer) : pixelBuffer(pixelBuffer) {}
+        ~PixelBufferUnlockGuard() { unlockNow(); }
+
+        void unlockNow()
+        {
+            if (pixelBuffer != nullptr)
+            {
+                CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+                pixelBuffer = nullptr;
+            }
+        }
+
+    private:
+        CVPixelBufferRef pixelBuffer;
+    };
+}
 #endif
 
 namespace margelo::nitro::botsort
@@ -70,7 +116,13 @@ namespace margelo::nitro::botsort
         }
 
 #elif __APPLE__
-        CVPixelBufferRef pixelBuffer = frame->getPixelBuffer();
+        if (!frame->getHasNativeBuffer())
+            return {};
+
+        auto nativeBuffer = frame->getNativeBuffer();
+        NativeBufferReleaseGuard nativeBufferGuard(nativeBuffer.release);
+        CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>(
+            static_cast<uintptr_t>(nativeBuffer.pointer));
         if (!pixelBuffer)
             return {};
 
@@ -78,6 +130,7 @@ namespace margelo::nitro::botsort
         {
             return {};
         }
+        PixelBufferUnlockGuard pixelBufferUnlockGuard(pixelBuffer);
 
         originalWidth = (int)CVPixelBufferGetWidth(pixelBuffer);
         originalHeight = (int)CVPixelBufferGetHeight(pixelBuffer);
@@ -106,7 +159,8 @@ namespace margelo::nitro::botsort
             AHardwareBuffer_unlock(buffer, nullptr);
             nativeBuffer.release();
 #elif __APPLE__
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+            pixelBufferUnlockGuard.unlockNow();
+            nativeBufferGuard.releaseNow();
 #endif
             return {};
         }
@@ -137,7 +191,7 @@ namespace margelo::nitro::botsort
 
         // 4. Update the tracker tracking matrices
         // Eigen::MatrixXf tracks = tracker->update(scaledDets, lowResFrame);
-        
+
         std::vector<Detection> tracker_detections;
         for (auto &detection : detections)
         {
@@ -156,10 +210,11 @@ namespace margelo::nitro::botsort
         AHardwareBuffer_unlock(buffer, nullptr);
         nativeBuffer.release();
 #elif __APPLE__
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+        pixelBufferUnlockGuard.unlockNow();
+        nativeBufferGuard.releaseNow();
 #endif
 
-                std::vector<TrackedObject> nativeResults;
+        std::vector<TrackedObject> nativeResults;
         for (auto &track : tracks)
         {
             // float trackedX1 = tracks(i, 0) * scaleFactorX;
