@@ -42,7 +42,6 @@ Pod::Spec.new do |s|
 
   s.dependency "react-native-nitro-modules"
   s.dependency "react-native-vision-camera"
-  s.dependency "Eigen", "~> 3.4"
 
   s.vendored_frameworks = "opencv-mobile.xcframework"
 

@@ -2,6 +2,37 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
+eigen_dir = File.join(__dir__, "eigen-3.4.0")
+unless File.directory?(File.join(eigen_dir, "Eigen"))
+  Dir.chdir(__dir__) do
+    archive = "eigen-3.4.0.tar.gz"
+    system("curl", "-sSfL", "-o", archive,
+           "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz") ||
+      raise("[NitroBotsort] Failed to download Eigen 3.4.0")
+    system("tar", "-xzf", archive) ||
+      raise("[NitroBotsort] Failed to extract Eigen 3.4.0")
+    File.delete(archive)
+  end
+end
+
+ios_dir = File.join(__dir__, "ios")
+opencv_xcframework = File.join(ios_dir, "opencv-mobile.xcframework")
+unless File.directory?(opencv_xcframework)
+  Dir.chdir(ios_dir) do
+    archive = "ios.zip"
+    system("curl", "-sSfL", "-o", archive,
+           "https://github.com/edgey-dev/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-ios.zip") ||
+      raise("[NitroBotsort] Failed to download OpenCV for iOS")
+    system("unzip", "-q", "-o", archive, "-d", "ios_device") ||
+      raise("[NitroBotsort] Failed to extract OpenCV for iOS")
+    system("xcodebuild", "-create-xcframework",
+           "-framework", "ios_device/opencv2.framework",
+           "-output", "opencv-mobile.xcframework") ||
+      raise("[NitroBotsort] Failed to create the OpenCV XCFramework")
+    system("rm", "-rf", archive, "ios_device")
+  end
+end
+
 Pod::Spec.new do |s|
   s.name         = "NitroBotsort"
   s.version      = package["version"]
@@ -27,10 +58,13 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-jsi'
   s.dependency 'React-callinvoker'
-  s.dependency 'Eigen', '~> 3.4'
+  s.dependency 'react-native-vision-camera'
   install_modules_dependencies(s)
 
-  s.pod_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' => '"$(inherited)" "$(PODS_ROOT)/Headers/Public" "$(PODS_ROOT)/Headers/Public/eigen3" "$(PODS_ROOT)/eigen3" "$(PODS_ROOT)/eigen3/Eigen"'
-  }
+  s.vendored_frameworks = 'ios/opencv-mobile.xcframework'
+
+  current_pod_target_xcconfig = s.attributes_hash['pod_target_xcconfig'] || {}
+  s.pod_target_xcconfig = current_pod_target_xcconfig.merge({
+    'HEADER_SEARCH_PATHS' => '"$(inherited)" "$(PODS_TARGET_SRCROOT)/cpp" "$(PODS_TARGET_SRCROOT)/eigen-3.4.0"'
+  })
 end
