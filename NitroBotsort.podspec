@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-jsi'
   s.dependency 'React-callinvoker'
-  s.dependency 'react-native-vision-camera'
+  s.dependency 'VisionCamera'
   install_modules_dependencies(s)
 
   s.vendored_libraries = 'ios/opencv-mobile/lib/*.a'
