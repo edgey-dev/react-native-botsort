@@ -16,20 +16,17 @@ unless File.directory?(File.join(eigen_dir, "Eigen"))
 end
 
 ios_dir = File.join(__dir__, "ios")
-opencv_xcframework = File.join(ios_dir, "opencv-mobile.xcframework")
-unless File.directory?(opencv_xcframework)
+opencv_dir = File.join(ios_dir, "opencv-mobile")
+unless File.directory?(File.join(opencv_dir, "include", "opencv4", "opencv2")) &&
+       !Dir.glob(File.join(opencv_dir, "lib", "*.a")).empty?
   Dir.chdir(ios_dir) do
     archive = "ios.zip"
     system("curl", "-sSfL", "-o", archive,
            "https://github.com/edgey-dev/react-native-botsort/releases/download/opencv-botsort-4.12.0/opencv-mobile-4.12.0-ios.zip") ||
       raise("[NitroBotsort] Failed to download OpenCV for iOS")
-    system("unzip", "-q", "-o", archive, "-d", "ios_device") ||
+    system("unzip", "-q", "-o", archive, "-d", "opencv-mobile") ||
       raise("[NitroBotsort] Failed to extract OpenCV for iOS")
-    system("xcodebuild", "-create-xcframework",
-           "-framework", "ios_device/opencv2.framework",
-           "-output", "opencv-mobile.xcframework") ||
-      raise("[NitroBotsort] Failed to create the OpenCV XCFramework")
-    system("rm", "-rf", archive, "ios_device")
+    File.delete(archive)
   end
 end
 
@@ -61,10 +58,10 @@ Pod::Spec.new do |s|
   s.dependency 'react-native-vision-camera'
   install_modules_dependencies(s)
 
-  s.vendored_frameworks = 'ios/opencv-mobile.xcframework'
+  s.vendored_libraries = 'ios/opencv-mobile/lib/*.a'
 
   current_pod_target_xcconfig = s.attributes_hash['pod_target_xcconfig'] || {}
   s.pod_target_xcconfig = current_pod_target_xcconfig.merge({
-    'HEADER_SEARCH_PATHS' => '"$(inherited)" "$(PODS_TARGET_SRCROOT)/cpp" "$(PODS_TARGET_SRCROOT)/eigen-3.4.0"'
+    'HEADER_SEARCH_PATHS' => '"$(inherited)" "$(PODS_TARGET_SRCROOT)/cpp" "$(PODS_TARGET_SRCROOT)/eigen-3.4.0" "$(PODS_TARGET_SRCROOT)/ios/opencv-mobile/include/opencv4"'
   })
 end
