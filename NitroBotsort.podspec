@@ -27,5 +27,10 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-jsi'
   s.dependency 'React-callinvoker'
+  s.dependency 'Eigen', '~> 3.4'
   install_modules_dependencies(s)
+
+  s.pod_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"$(inherited)" "$(PODS_ROOT)/Headers/Public" "$(PODS_ROOT)/Headers/Public/eigen3" "$(PODS_ROOT)/eigen3" "$(PODS_ROOT)/eigen3/Eigen"'
+  }
 end

@@ -231,9 +231,9 @@ int main(int argc, char **argv)
 
     // if (argc == 4)
     // {
-        source = argv[1];
-        labels_dir = argv[2];
-        output_dir = argv[3];
+    source = argv[1];
+    labels_dir = argv[2];
+    output_dir = argv[3];
     // }
     // else
     // {
@@ -289,6 +289,8 @@ int main(int argc, char **argv)
     cv::Mat frame;
     cv::VideoCapture cap;
     int frame_counter = 0;
+    double min_time_per_frame = 10000.0;
+    double max_time_per_frame = 0;
     double tracker_time_sum = 0, tracker_time_total = 0;
     std::string output_file_txt = output_dir_mot + "/all.txt";
     std::vector<std::string> image_filepaths;
@@ -297,7 +299,6 @@ int main(int argc, char **argv)
     trackerConfig.enable_gmc = true;
     botsort::SofGMCConfig gmcConfig;
     gmcConfig.gmc_method = botsort::GMCMethod::SOF;
-
 
     // Initialize BoTSORT tracker
     std::unique_ptr<BoTSORT> tracker;
@@ -409,7 +410,6 @@ int main(int argc, char **argv)
             tracker->track(gt_per_frame[frame_counter], frame);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
-        tracker_time_sum += elapsed.count();
 
         // Outputs
         mot_format_writer(tracks, output_file_txt);
@@ -424,13 +424,21 @@ int main(int argc, char **argv)
             tracker_time_total += tracker_time_sum;
             tracker_time_sum = 0;
         }
+
+        if (elapsed.count() > max_time_per_frame)
+            max_time_per_frame = elapsed.count();
+        else if (elapsed.count() < min_time_per_frame)
+            min_time_per_frame = elapsed.count();
+        tracker_time_sum += elapsed.count();
     }
 #endif
-
     std::cout << "Average tracker FPS: " << frame_counter / tracker_time_total
               << std::endl;
+    std::cout << "Min processing time per frame (ms): " << min_time_per_frame * 1000 << std::endl;
     std::cout << "Average processing time per frame (ms): "
               << (tracker_time_total / frame_counter) * 1000 << std::endl;
+    std::cout << "Max processing time per frame (ms): " << max_time_per_frame * 1000 << std::endl;
+
     cap.release();
 
     return 0;
