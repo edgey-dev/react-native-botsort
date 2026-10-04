@@ -58,7 +58,8 @@
     "botsort",
     "cv",
     "computer vision",
-    "tracking algorithim"
+    "tracking algorithim",
+    "tracking"
   ],
   "repository": {
     "type": "git",
@@ -163,7 +164,8 @@
     },
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
-      "<rootDir>/lib/"
+      "<rootDir>/lib/",
+      "<rootDir>/benchmark/"
     ]
   },
   "commitlint": {

@@ -41,12 +41,6 @@ export enum GMCMethod {
  */
 export interface BoTSORTConfig {
   /**
-   * if true, Global Motion Compensation is enabled
-   * @default false
-   */
-  enable_gmc?: boolean;
-
-  /**
    * confidence threshold to classify a detection as high confidence detection.
    * These detections are used in 1st level of association and to confirm a track
    *
@@ -91,12 +85,6 @@ export interface BoTSORTConfig {
    * @default 30
    */
   frame_rate?: number;
-
-  /**
-   * GMC algorithim method to use
-   * @deprecated
-   */
-  gmc_method?: GMCMethod;
 }
 
 /**
@@ -221,6 +209,6 @@ export interface BoTSortTracker extends HybridObject<{
   ios: 'c++';
   android: 'c++';
 }> {
-  initialize(trackerConfig: BoTSORTConfig, gmcConfig?: GMCConfig): void;
+  initialize(trackerConfig?: BoTSORTConfig, gmcConfig?: GMCConfig): void;
   track(frame: Frame, detections: BoundingBox[]): TrackedObject[];
 }

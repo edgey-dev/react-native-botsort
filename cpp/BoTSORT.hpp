@@ -13,12 +13,7 @@
 class BoTSORT
 {
 public:
-    // explicit BoTSORT(const Config<TrackerParams> &tracker_config,
-    //                  const Config<GMC_Params> &gmc_config = {},
-    //                  const Config<ReIDParams> &reid_config = {},
-    //                  const std::string &reid_onnx_model_path = "");
-
-    explicit BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmc_config);
+    explicit BoTSORT(const std::optional<margelo::nitro::botsort::BoTSORTConfig> &trackerConfig, const std::optional<GMC_Config> &gmc_config);
 
     ~BoTSORT() = default;
 

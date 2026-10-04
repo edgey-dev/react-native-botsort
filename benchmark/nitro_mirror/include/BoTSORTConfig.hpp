@@ -14,14 +14,12 @@
 // }
 
 #include <optional>
-#include "GMCMethod.hpp"
 
 namespace margelo::nitro::botsort
 {
   struct BoTSORTConfig final
   {
   public:
-    std::optional<bool> enable_gmc;
     std::optional<double> track_high_thresh;
     std::optional<double> track_low_thresh;
     std::optional<double> new_track_thresh;
@@ -30,12 +28,11 @@ namespace margelo::nitro::botsort
     std::optional<double> proximity_thresh;
     std::optional<double> appearance_thresh;
     std::optional<double> frame_rate;
-    std::optional<GMCMethod> gmc_method;
     std::optional<double> lambda;
 
   public:
     BoTSORTConfig() = default;
-    explicit BoTSORTConfig(std::optional<bool> enable_gmc, std::optional<double> track_high_thresh, std::optional<double> track_low_thresh, std::optional<double> new_track_thresh, std::optional<double> track_buffer, std::optional<double> match_thresh, std::optional<double> proximity_thresh, std::optional<double> appearance_thresh, std::optional<double> frame_rate, std::optional<GMCMethod> gmc_method, std::optional<double> lambda) : enable_gmc(enable_gmc), track_high_thresh(track_high_thresh), track_low_thresh(track_low_thresh), new_track_thresh(new_track_thresh), track_buffer(track_buffer), match_thresh(match_thresh), proximity_thresh(proximity_thresh), appearance_thresh(appearance_thresh), frame_rate(frame_rate), gmc_method(gmc_method), lambda(lambda) {}
+    explicit BoTSORTConfig(std::optional<double> track_high_thresh, std::optional<double> track_low_thresh, std::optional<double> new_track_thresh, std::optional<double> track_buffer, std::optional<double> match_thresh, std::optional<double> proximity_thresh, std::optional<double> appearance_thresh, std::optional<double> frame_rate, std::optional<double> lambda) : track_high_thresh(track_high_thresh), track_low_thresh(track_low_thresh), new_track_thresh(new_track_thresh), track_buffer(track_buffer), match_thresh(match_thresh), proximity_thresh(proximity_thresh), appearance_thresh(appearance_thresh), frame_rate(frame_rate), lambda(lambda) {}
 
   public:
     friend bool operator==(const BoTSORTConfig &lhs, const BoTSORTConfig &rhs) = default;

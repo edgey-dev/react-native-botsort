@@ -47,7 +47,7 @@
 
 void BoTSORT::_load_params_from_config(const margelo::nitro::botsort::BoTSORTConfig &config)
 {
-    _gmc_enabled = config.enable_gmc.value_or(false);
+    // _gmc_enabled = config.enable_gmc.value_or(false);
     _track_high_thresh = config.track_high_thresh.value_or(0.6);
     _track_low_thresh = config.track_low_thresh.value_or(0.1);
     _new_track_thresh = config.new_track_thresh.value_or(0.7);
@@ -59,11 +59,17 @@ void BoTSORT::_load_params_from_config(const margelo::nitro::botsort::BoTSORTCon
     // _lambda = config.lambda.value_or(0.985);
 }
 
-BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config, const std::optional<GMC_Config> &gmc_config)
+BoTSORT::BoTSORT(const std::optional<margelo::nitro::botsort::BoTSORTConfig> &tracker_config, const std::optional<GMC_Config> &gmc_config)
 {
     // auto tracker_params = fetch_config<TrackerParams>(
     //     tracker_config, TrackerParams::load_config);
-    _load_params_from_config(tracker_config);
+    if (tracker_config)
+        _load_params_from_config(tracker_config.value());
+    else
+    {
+        margelo::nitro::botsort::BoTSORTConfig config;
+        _load_params_from_config(config);
+    }
 
     // Tracker module
     _frame_id = 0;
@@ -88,7 +94,7 @@ BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config, c
     // }
 
     // Global motion compensation module
-    if (_gmc_enabled && gmc_config)
+    if (gmc_config)
     {
         // auto gmc_params = fetch_config<
         //     GMC_Params>(gmc_config, [this](const std::string &config_path)
@@ -96,6 +102,7 @@ BoTSORT::BoTSORT(const margelo::nitro::botsort::BoTSORTConfig &tracker_config, c
         //                       GlobalMotionCompensation::GMC_method_map[_gmc_method_name],
         //                       config_path); });
         _gmc_algo = std::make_unique<GlobalMotionCompensation>(gmc_config.value());
+        _gmc_enabled = true;
     }
     else
     {

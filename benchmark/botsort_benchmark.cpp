@@ -296,22 +296,11 @@ int main(int argc, char **argv)
     std::vector<std::string> image_filepaths;
     bool is_video = is_video_file(source);
     botsort::BoTSORTConfig trackerConfig;
-    trackerConfig.enable_gmc = true;
-    botsort::SofGMCConfig gmcConfig;
-    gmcConfig.gmc_method = botsort::GMCMethod::SOF;
+    botsort::EccGMCConfig gmcConfig;
+    gmcConfig.gmc_method = botsort::GMCMethod::ECC;
 
     // Initialize BoTSORT tracker
-    std::unique_ptr<BoTSORT> tracker;
-    if (argc == 4)
-    {
-        tracker = std::make_unique<BoTSORT>(trackerConfig, gmcConfig);
-    }
-    // else
-    // {
-    //     tracker = std::make_unique<BoTSORT>(tracker_config_path,
-    //                                         gmc_config_path, reid_config_path,
-    //                                         reid_onnx_model_path);
-    // }
+    std::unique_ptr<BoTSORT> tracker = std::make_unique<BoTSORT>(trackerConfig, gmcConfig);
 
     if (is_video)
     {
@@ -403,6 +392,7 @@ int main(int argc, char **argv)
         }
 
         std::string output_file_img = output_dir_img + "/" + filename + ".jpg";
+        cv::resize(frame, frame, cv::Size(1920, 1080));
 
         // Execute tracker
         auto start = std::chrono::high_resolution_clock::now();

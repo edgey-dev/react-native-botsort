@@ -16,7 +16,7 @@ namespace margelo::nitro::botsort
         HybridBoTSortTracker();
         ~HybridBoTSortTracker() override = default;
 
-        void initialize(const BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmcConfig) override;
+        void initialize(const std::optional<BoTSORTConfig> &trackerConfig, const std::optional<GMC_Config> &gmcConfig) override;
 
         std::vector<TrackedObject> track(
             const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec> &frame,

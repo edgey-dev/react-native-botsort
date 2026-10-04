@@ -62,7 +62,7 @@ namespace margelo::nitro::botsort
 
     HybridBoTSortTracker::HybridBoTSortTracker() : HybridObject(TAG), HybridBoTSortTrackerSpec() {}
 
-    void HybridBoTSortTracker::initialize(const BoTSORTConfig &trackerConfig, const std::optional<GMC_Config> &gmcConfig)
+    void HybridBoTSortTracker::initialize(const std::optional<BoTSORTConfig> &trackerConfig, const std::optional<GMC_Config> &gmcConfig)
     {
         tracker = std::make_unique<BoTSORT>(trackerConfig, gmcConfig);
     }
