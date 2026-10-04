@@ -197,7 +197,7 @@ namespace margelo::nitro::botsort
         {
             Detection tracker_detection;
             tracker_detection.bbox_tlwh =
-                cv::Rect_<float>(detection.x, detection.y, detection.width, detection.height);
+                cv::Rect_<float>(detection.tx, detection.ty, detection.width, detection.height);
             tracker_detection.class_id = static_cast<int>(detection.classId);
             tracker_detection.confidence = detection.confidence;
             tracker_detections.push_back(tracker_detection);

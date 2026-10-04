@@ -6,8 +6,8 @@ import { type Frame } from 'react-native-vision-camera';
  * Follows the format top-left-x, top-left-y
  */
 export interface BoundingBox {
-  x: number;
-  y: number;
+  tx: number;
+  ty: number;
   width: number;
   height: number;
   confidence: number;
@@ -20,15 +20,16 @@ export interface BoundingBox {
  */
 export interface TrackedObject {
   id: number;
-  x: number;
-  y: number;
+  tx: number;
+  ty: number;
   w: number;
   h: number;
   classId: number;
 }
 
 /**
- * GMC algorithim methods available */
+ * Available GMC algorithim methods
+ */
 export enum GMCMethod {
   ORB,
   ECC,

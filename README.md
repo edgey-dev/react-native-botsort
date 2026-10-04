@@ -57,8 +57,8 @@ Each detection uses pixel coordinates relative to the top-left of the frame:
 ```ts
 const detections: BoundingBox[] = [
   {
-    x: 120,
-    y: 80,
+    tx: 120,
+    ty: 80,
     width: 64,
     height: 112,
     confidence: 0.92,
@@ -71,7 +71,7 @@ Pass an empty array when there are no detections. Each result contains a tracker
 
 ```ts
 const tracks: TrackedObject[] = processFrame(frame, detections);
-// Each result has: id, x, y, w, h, classId
+// Each result has: id, tx, ty, w, h, classId
 ```
 
 > [!NOTE]
@@ -136,7 +136,7 @@ Updates the tracker with a VisionCamera `Frame` and an array of `BoundingBox` de
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `x`, `y` | `number` | Top-left position in frame pixels. |
+| `tx`, `ty` | `number` | Top-left position in frame pixels. |
 | `width`, `height` | `number` | Box dimensions in frame pixels. |
 | `confidence` | `number` | Detector confidence score. |
 | `classId` | `number` | Detector class identifier. |
@@ -146,7 +146,7 @@ Updates the tracker with a VisionCamera `Frame` and an array of `BoundingBox` de
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | `number` | Tracker-assigned identity. |
-| `x`, `y` | `number` | Top-left position in frame pixels. |
+| `tx`, `ty` | `number` | Top-left position in frame pixels. |
 | `w`, `h` | `number` | Tracked box dimensions in pixels. |
 | `classId` | `number` | Associated detector class identifier. |
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <HybridBoTSortTrackerSpec.hpp>
-// #include <motcpp/trackers/botsort.hpp>
 #include "BoTSORT.hpp"
 #include <memory>
 #include <string>
@@ -24,7 +23,6 @@ namespace margelo::nitro::botsort
             const std::vector<BoundingBox> &detections) override;
 
     private:
-        // Fix: Instantiate utilizing the exact factory base or direct tracker interface type
         std::unique_ptr<BoTSORT> tracker;
     };
 
