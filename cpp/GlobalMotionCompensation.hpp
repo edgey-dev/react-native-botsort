@@ -66,7 +66,8 @@ private:
 private:
     std::string _algo_name = "ecc";
     float _downscale;
-    int _max_iterations, _termination_eps;
+    int _max_iterations;
+    double _termination_eps;
 
     bool _first_frame_initialized = false;
     cv::Mat _prev_frame;
@@ -144,8 +145,8 @@ public:
     HomographyMatrix apply(const cv::Mat &frame_raw,
                            const std::vector<Detection> &detections);
 
-// public:
-//     static std::map<std::string, GMC_Method> GMC_method_map;
+    // public:
+    //     static std::map<std::string, GMC_Method> GMC_method_map;
 
 private:
     std::unique_ptr<GMC_Algorithm> _gmc_algorithm;

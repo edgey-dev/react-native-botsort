@@ -18,8 +18,8 @@
 #include "track.hpp"
 
 #define TEST_GMC 0
-#define GT_AS_PREDS 1
-#define YOLOv8_PREDS 0
+// #define GT_AS_PREDS 1
+// #define YOLOv8_PREDS 0
 
 using namespace margelo::nitro;
 
@@ -53,38 +53,38 @@ void mot_format_writer(const std::vector<std::shared_ptr<Track>> &tracks,
  * @param frame_height Image height (used to convert normalized bounding box to absolute coordinates)
  * @return std::vector<Detection> Detections
  */
-std::vector<Detection>
-read_detections_from_file(const std::string &detection_file, int frame_width,
-                          int frame_height)
-{
-    std::vector<Detection> detections;
-    std::ifstream det_file(detection_file);
-    std::string line;
-    while (std::getline(det_file, line))
-    {
-        std::istringstream iss(line);
-        std::vector<float> values(std::istream_iterator<float>{iss},
-                                  std::istream_iterator<float>());
+// std::vector<Detection>
+// read_detections_from_file(const std::string &detection_file, int frame_width,
+//                           int frame_height)
+// {
+//     std::vector<Detection> detections;
+//     std::ifstream det_file(detection_file);
+//     std::string line;
+//     while (std::getline(det_file, line))
+//     {
+//         std::istringstream iss(line);
+//         std::vector<float> values(std::istream_iterator<float>{iss},
+//                                   std::istream_iterator<float>());
 
-        Detection det;
-        if (values[0] != 0)
-            continue;
-        det.class_id = static_cast<int>(values[0]);
-        det.bbox_tlwh =
-            cv::Rect_(values[1] - values[3] / 2, values[2] - values[4] / 2,
-                      values[3], values[4]);
-        // bounding box is normalized, so convert to absolute coordinates
-        det.bbox_tlwh.x *= frame_width;
-        det.bbox_tlwh.y *= frame_height;
-        det.bbox_tlwh.width *= frame_width;
-        det.bbox_tlwh.height *= frame_height;
+//         Detection det;
+//         if (values[0] != 0)
+//             continue;
+//         det.class_id = static_cast<int>(values[0]);
+//         det.bbox_tlwh =
+//             cv::Rect_(values[1] - values[3] / 2, values[2] - values[4] / 2,
+//                       values[3], values[4]);
+//         // bounding box is normalized, so convert to absolute coordinates
+//         det.bbox_tlwh.x *= frame_width;
+//         det.bbox_tlwh.y *= frame_height;
+//         det.bbox_tlwh.width *= frame_width;
+//         det.bbox_tlwh.height *= frame_height;
 
-        det.confidence = values[5];
-        detections.push_back(det);
-    }
-    det_file.close();
-    return detections;
-}
+//         det.confidence = values[5];
+//         detections.push_back(det);
+//     }
+//     det_file.close();
+//     return detections;
+// }
 
 std::vector<std::vector<Detection>>
 read_mot_gt_from_file(const std::string &gt_filepath)
@@ -97,6 +97,9 @@ read_mot_gt_from_file(const std::string &gt_filepath)
     std::string line;
     while (std::getline(gt_file, line))
     {
+        if (line.empty())
+            continue;
+
         std::istringstream iss(line);
         std::vector<float> values;
 
@@ -122,6 +125,74 @@ read_mot_gt_from_file(const std::string &gt_filepath)
     }
 
     return all_gt_for_curr_sequence;
+}
+
+template <typename T>
+bool is_valid_detection_box(const cv::Rect_<T> &bbox, int frame_width,
+                            int frame_height)
+{
+    if (bbox.width <= 0 || bbox.height <= 0)
+        return false;
+
+    if (bbox.width > frame_width * 0.95f || bbox.height > frame_height * 0.95f)
+        return false;
+
+    float x1 = static_cast<float>(bbox.x);
+    float y1 = static_cast<float>(bbox.y);
+    float x2 = static_cast<float>(bbox.x + bbox.width);
+    float y2 = static_cast<float>(bbox.y + bbox.height);
+
+    if (x2 <= 0 || y2 <= 0)
+        return false;
+    if (x1 >= frame_width || y1 >= frame_height)
+        return false;
+
+    return true;
+}
+
+std::vector<std::vector<Detection>>
+read_mot_det_from_file(const std::string &det_filepath)
+{
+    // MOTChallenge detection format:
+    // frame_id,-1,left,top,width,height,score
+    std::vector<std::vector<Detection>> all_det_for_curr_sequence;
+    std::ifstream det_file(det_filepath);
+    std::string line;
+
+    const int frame_width = 1920;
+    const int frame_height = 1080;
+
+    while (std::getline(det_file, line))
+    {
+        if (line.empty())
+            continue;
+
+        std::istringstream iss(line);
+        std::vector<float> values;
+        while (std::getline(iss, line, ','))
+        {
+            values.push_back(std::stof(line));
+        }
+        if (values.size() < 7)
+            continue;
+
+        Detection det;
+        int frame_id = static_cast<int>(values[0]);
+        det.class_id = 0;
+        det.bbox_tlwh = cv::Rect_(values[2], values[3], values[4], values[5]);
+        det.confidence = values[6];
+
+        if (!is_valid_detection_box(det.bbox_tlwh, frame_width, frame_height))
+            continue;
+
+        while (all_det_for_curr_sequence.size() < frame_id)
+        {
+            all_det_for_curr_sequence.emplace_back();
+        }
+        all_det_for_curr_sequence[frame_id - 1].push_back(det);
+    }
+
+    return all_det_for_curr_sequence;
 }
 
 /**
@@ -193,62 +264,25 @@ int main(int argc, char **argv)
 {
 
     // Command line arguments check
-    if (argc != 4)
+    if (argc != 5)
     {
-        std::cout << "Usage eg. 1: ./botsort_tracking_example <source> "
-                     "<dir_containing_per_frame_detections> "
-                     "<dir_to_save_mot_format_output>"
+        std::cout << "Usage: ./botsort_tracking_example <source> <det_file_or_dir> "
+                     "<dir_to_save_mot_format_output> [gt_file]"
                   << std::endl;
-        // std::cout << "Usage eg. 2: ./botsort_tracking_example "
-        //              "<tracker_config_path> "
-        //              "<gmc_config_path> <reid_config_path> "
-        //              "<reid_onnx_model_path> "
-        //              "<source> <dir_containing_per_frame_detections> "
-        //              "<dir_to_save_mot_format_output> <gt_file>"
-        //           << std::endl;
         return -1;
     }
-    // else if (4 < argc && argc < 8)
-    // {
-    //     std::cout << "Usage eg. 1: ./botsort_tracking_example <source> "
-    //                  "<dir_containing_per_frame_detections> "
-    //                  "<dir_to_save_mot_format_output>"
-    //               << std::endl;
-    //     std::cout << "Usage eg. 2: ./botsort_tracking_example "
-    //                  "<tracker_config_path> "
-    //                  "<gmc_config_path> <reid_config_path> "
-    //                  "<reid_onnx_model_path> "
-    //                  "<source> <dir_containing_per_frame_detections> "
-    //                  "<dir_to_save_mot_format_output> <gt_file>"
-    //               << std::endl;
-    //     return -1;
-    // }
-
-    // std::string tracker_config_path, gmc_config_path, reid_config_path,
-    //     reid_onnx_model_path, source, labels_dir, output_dir, gt_filepath;
 
     std::string source, labels_dir, output_dir, gt_filepath;
 
-    // if (argc == 4)
-    // {
     source = argv[1];
     labels_dir = argv[2];
     output_dir = argv[3];
-    // }
-    // else
-    // {
-    //     tracker_config_path = argv[1];
-    //     gmc_config_path = argv[2];
-    //     reid_config_path = argv[3];
-    //     reid_onnx_model_path = argv[4];
-    //     source = argv[5];
-    //     labels_dir = argv[6];
-    //     output_dir = argv[7];
-    // }
+    gt_filepath = argv[4];
 
     // Setup output directories
     std::string output_dir_mot = output_dir + "/mot";
     std::string output_dir_img = output_dir + "/img";
+    std::filesystem::remove_all(output_dir);
     std::filesystem::create_directories(output_dir_mot);
     std::filesystem::create_directories(output_dir_img);
 
@@ -298,7 +332,7 @@ int main(int argc, char **argv)
     botsort::BoTSORTConfig trackerConfig;
     botsort::EccGMCConfig gmcConfig;
     gmcConfig.gmc_method = botsort::GMCMethod::ECC;
-
+    gmcConfig.downscale = 5.0;
     // Initialize BoTSORT tracker
     std::unique_ptr<BoTSORT> tracker = std::make_unique<BoTSORT>(trackerConfig, gmcConfig);
 
@@ -317,64 +351,66 @@ int main(int argc, char **argv)
         std::sort(image_filepaths.begin(), image_filepaths.end());
     }
 
-#if (YOLOv8_PREDS == 1)
-    // Read detections and execute MultiObjectTracker
+    // #if (YOLOv8_PREDS == 1)
+    //     // Read detections and execute MultiObjectTracker
+    //     while (cap.read(frame) || frame_counter < image_filepaths.size())
+    //     {
+    //         std::string filename;
+
+    //         if (is_video)
+    //         {
+    //             std::ostringstream ss;
+    //             ss << std::setw(6) << std::setfill('0') << frame_counter;
+    //             filename = ss.str();
+    //         }
+    //         else
+    //         {
+    //             frame = cv::imread(image_filepaths[frame_counter]);
+    //             filename = image_filepaths[frame_counter].substr(
+    //                 image_filepaths[frame_counter].find_last_of('/') + 1);
+    //             filename = filename.substr(0, filename.find_last_of('.'));
+    //         }
+
+    //         std::string detection_file = labels_dir + "/" + filename + ".txt";
+    //         std::vector<Detection> detections = read_detections_from_file(
+    //             detection_file, frame.cols, frame.rows);
+    //         std::string output_file_img = output_dir_img + "/" + filename + ".jpg";
+
+    //         // Execute tracker
+    //         auto start = std::chrono::high_resolution_clock::now();
+    //         std::vector<std::shared_ptr<Track>> tracks =
+    //             tracker->track(detections, frame);
+    //         auto end = std::chrono::high_resolution_clock::now();
+    //         std::chrono::duration<double> elapsed = end - start;
+    //         tracker_time_sum += elapsed.count();
+
+    //         // Outputs
+    //         mot_format_writer(tracks, output_file_txt);
+
+    //         plot_tracks(frame, detections, tracks);
+    //         cv::imwrite(output_file_img, frame);
+
+    //         frame_counter++;
+
+    //         if (frame_counter % 100 == 0)
+    //         {
+    //             std::cout << "Processed " << frame_counter << " frames\t";
+    //             std::cout << "Tracker FPS (last 100 frames): "
+    //                       << 100 / tracker_time_sum << std::endl;
+    //             tracker_time_total += tracker_time_sum;
+    //             tracker_time_sum = 0;
+    //         }
+    //     }
+    // #endif
+
+    std::vector<std::vector<Detection>> det_per_frame =
+        read_mot_det_from_file(labels_dir);
+
     while (cap.read(frame) || frame_counter < image_filepaths.size())
     {
-        std::string filename;
+        if (frame_counter >= det_per_frame.size())
+            break;
 
-        if (is_video)
-        {
-            std::ostringstream ss;
-            ss << std::setw(6) << std::setfill('0') << frame_counter;
-            filename = ss.str();
-        }
-        else
-        {
-            frame = cv::imread(image_filepaths[frame_counter]);
-            filename = image_filepaths[frame_counter].substr(
-                image_filepaths[frame_counter].find_last_of('/') + 1);
-            filename = filename.substr(0, filename.find_last_of('.'));
-        }
-
-        std::string detection_file = labels_dir + "/" + filename + ".txt";
-        std::vector<Detection> detections = read_detections_from_file(
-            detection_file, frame.cols, frame.rows);
-        std::string output_file_img = output_dir_img + "/" + filename + ".jpg";
-
-        // Execute tracker
-        auto start = std::chrono::high_resolution_clock::now();
-        std::vector<std::shared_ptr<Track>> tracks =
-            tracker->track(detections, frame);
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        tracker_time_sum += elapsed.count();
-
-        // Outputs
-        mot_format_writer(tracks, output_file_txt);
-
-        plot_tracks(frame, detections, tracks);
-        cv::imwrite(output_file_img, frame);
-
-        frame_counter++;
-
-        if (frame_counter % 100 == 0)
-        {
-            std::cout << "Processed " << frame_counter << " frames\t";
-            std::cout << "Tracker FPS (last 100 frames): "
-                      << 100 / tracker_time_sum << std::endl;
-            tracker_time_total += tracker_time_sum;
-            tracker_time_sum = 0;
-        }
-    }
-#endif
-
-#if (GT_AS_PREDS == 1)
-    std::vector<std::vector<Detection>> gt_per_frame =
-        read_mot_gt_from_file(labels_dir);
-
-    while (cap.read(frame) || frame_counter < image_filepaths.size())
-    {
         std::string filename;
 
         if (is_video)
@@ -394,17 +430,17 @@ int main(int argc, char **argv)
         std::string output_file_img = output_dir_img + "/" + filename + ".jpg";
         cv::resize(frame, frame, cv::Size(1920, 1080));
 
-        // Execute tracker
+        // Execute tracker based on real det.txt boxes instead of GT boxes
         auto start = std::chrono::high_resolution_clock::now();
         std::vector<std::shared_ptr<Track>> tracks =
-            tracker->track(gt_per_frame[frame_counter], frame);
+            tracker->track(det_per_frame[frame_counter], frame);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
 
         // Outputs
         mot_format_writer(tracks, output_file_txt);
 
-        plot_tracks(frame, gt_per_frame[frame_counter], tracks);
+        plot_tracks(frame, det_per_frame[frame_counter], tracks);
         cv::imwrite(output_file_img, frame);
 
         frame_counter++;
@@ -421,13 +457,23 @@ int main(int argc, char **argv)
             min_time_per_frame = elapsed.count();
         tracker_time_sum += elapsed.count();
     }
-#endif
+
     std::cout << "Average tracker FPS: " << frame_counter / tracker_time_total
               << std::endl;
     std::cout << "Min processing time per frame (ms): " << min_time_per_frame * 1000 << std::endl;
     std::cout << "Average processing time per frame (ms): "
               << (tracker_time_total / frame_counter) * 1000 << std::endl;
     std::cout << "Max processing time per frame (ms): " << max_time_per_frame * 1000 << std::endl;
+
+    std::string python_cmd = "python3 ./compare_results.py --gt \"" +
+                             gt_filepath + "\" --t \"" +
+                             output_file_txt + "\"";
+    std::cout << "\nRunning MOT accuracy report...\n";
+    int py_status = std::system(python_cmd.c_str());
+    if (py_status != 0)
+    {
+        std::cerr << "Accuracy script exited with status " << py_status << std::endl;
+    }
 
     cap.release();
 

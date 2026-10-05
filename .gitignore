@@ -84,4 +84,6 @@ android/generated
 
 # React Native Nitro Modules
 nitrogen/
+
 mot_output/
+.venv/

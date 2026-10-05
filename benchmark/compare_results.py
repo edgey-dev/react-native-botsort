@@ -2,6 +2,11 @@
 
 import argparse
 
+import numpy as np
+
+if not hasattr(np, "asfarray"):
+    np.asfarray = lambda a, dtype=None: np.asarray(a, dtype=dtype)
+
 
 def parse_cmd_args():
     parser = argparse.ArgumentParser()
@@ -24,7 +29,6 @@ def parse_cmd_args():
 def motMetricsEnhancedCalculator(gtSource, tSource):
     # import required packages
     import motmetrics as mm
-    import numpy as np
 
     # load ground truth
     gt = np.loadtxt(gtSource, delimiter=",")

@@ -271,7 +271,7 @@ void ECC_GMC::_load_params_from_config(const EccGMCConfig &config)
 {
     _downscale = config.downscale.value_or(5.0);
     _max_iterations = static_cast<int>(config.max_iterations.value_or(500));
-    _termination_eps = static_cast<int>(config.termination_eps.value_or(1000));
+    _termination_eps = config.termination_eps.value_or(1e-3);
 }
 
 HomographyMatrix ECC_GMC::apply(const cv::Mat &frame_raw,
@@ -294,7 +294,6 @@ HomographyMatrix ECC_GMC::apply(const cv::Mat &frame_raw,
         cv::GaussianBlur(frame, frame, _gaussian_blur_kernel_size, 1.5);
         cv::resize(frame, frame, cv::Size(width, height));
     }
-
     if (!_first_frame_initialized)
     {
         /**
@@ -303,27 +302,37 @@ HomographyMatrix ECC_GMC::apply(const cv::Mat &frame_raw,
          */
         _first_frame_initialized = true;
         _prev_frame = frame.clone();
+        std::cout << "Downscale: " << _downscale << std::endl;
         return H;
     }
 
     try
     {
-        cv::Mat H_cvMat;
+        cv::Mat warp = cv::Mat::eye(2, 3, CV_32F);
 #if CV_MAJOR_VERSION == 3
-        cv::findTransformECC(_prev_frame, frame, H_cvMat, cv::MOTION_EUCLIDEAN,
+        cv::findTransformECC(_prev_frame, frame, warp, cv::MOTION_EUCLIDEAN,
                              _termination_criteria);
 #elif CV_MAJOR_VERSION == 4
-        cv::findTransformECC(_prev_frame, frame, H_cvMat, cv::MOTION_EUCLIDEAN,
+        cv::findTransformECC(_prev_frame, frame, warp, cv::MOTION_EUCLIDEAN,
                              _termination_criteria, cv::noArray(), 1);
 #endif
-        cv2eigen(H_cvMat, H);
-        _prev_frame = frame.clone();
+        for (int row = 0; row < 2; ++row)
+        {
+            for (int col = 0; col < 3; ++col)
+            {
+                H(row, col) = warp.at<float>(row, col);
+            }
+        }
+        H(0, 2) *= _downscale;
+        H(1, 2) *= _downscale;
     }
     catch (const cv::Exception &e)
     {
-        std::cout << "Warning: Could not estimate affine matrix" << std::endl;
+        std::cout << "Warning: Could not estimate ECC transform: " << e.what()
+                  << std::endl;
     }
 
+    _prev_frame = frame.clone();
     return H;
 }
 
@@ -534,4 +543,3 @@ SparseOptFlow_GMC::apply(const cv::Mat &frame_raw,
 //     homography.copyTo(_prev_homography);
 //     return H;
 // }
-

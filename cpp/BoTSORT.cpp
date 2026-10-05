@@ -49,11 +49,11 @@ void BoTSORT::_load_params_from_config(const margelo::nitro::botsort::BoTSORTCon
 {
     // _gmc_enabled = config.enable_gmc.value_or(false);
     _track_high_thresh = config.track_high_thresh.value_or(0.6);
-    _track_low_thresh = config.track_low_thresh.value_or(0.1);
-    _new_track_thresh = config.new_track_thresh.value_or(0.7);
+    _track_low_thresh = config.track_low_thresh.value_or(0.2);
+    _new_track_thresh = config.new_track_thresh.value_or(0.6);
     _track_buffer = config.track_buffer.value_or(30);
     _match_thresh = config.match_thresh.value_or(0.7);
-    _proximity_thresh = config.proximity_thresh.value_or(0.5);
+    _proximity_thresh = config.proximity_thresh.value_or(0.55);
     //  _appearance_thresh = config.appearance_thresh.value_or(0.25);
     _frame_rate = config.frame_rate.value_or(30);
     // _lambda = config.lambda.value_or(0.985);
@@ -128,14 +128,32 @@ BoTSORT::track(const std::vector<Detection> &detections, const cv::Mat &frame)
         for (Detection &detection :
              const_cast<std::vector<Detection> &>(detections))
         {
-            detection.bbox_tlwh.x = std::max(0.0f, detection.bbox_tlwh.x);
-            detection.bbox_tlwh.y = std::max(0.0f, detection.bbox_tlwh.y);
-            detection.bbox_tlwh.width =
-                std::min(static_cast<float>(frame.cols - 1),
-                         detection.bbox_tlwh.width);
-            detection.bbox_tlwh.height =
-                std::min(static_cast<float>(frame.rows - 1),
-                         detection.bbox_tlwh.height);
+            cv::Rect2f bbox = detection.bbox_tlwh;
+            if (bbox.width <= 0.0f || bbox.height <= 0.0f)
+                continue;
+
+            float x1 = bbox.x;
+            float y1 = bbox.y;
+            float x2 = bbox.x + bbox.width;
+            float y2 = bbox.y + bbox.height;
+
+            if (x1 < 0.0f || y1 < 0.0f || x2 <= 0.0f || y2 <= 0.0f)
+                continue;
+            if (x1 >= frame.cols || y1 >= frame.rows)
+                continue;
+            if (x2 > frame.cols || y2 > frame.rows)
+            {
+                x2 = std::min<float>(x2, frame.cols);
+                y2 = std::min<float>(y2, frame.rows);
+                bbox.width = std::max(0.0f, x2 - x1);
+                bbox.height = std::max(0.0f, y2 - y1);
+                if (bbox.width <= 0.0f || bbox.height <= 0.0f)
+                    continue;
+            }
+            if (bbox.width > frame.cols * 0.95f || bbox.height > frame.rows * 0.95f)
+                continue;
+
+            detection.bbox_tlwh = bbox;
 
             std::shared_ptr<Track> tracklet;
             std::vector<float> tlwh = {
@@ -144,15 +162,6 @@ BoTSORT::track(const std::vector<Detection> &detections, const cv::Mat &frame)
 
             if (detection.confidence > _track_low_thresh)
             {
-                // if (_reid_enabled)
-                // {
-                //     FeatureVector embedding =
-                //         _extract_features(frame, detection.bbox_tlwh);
-                //     tracklet = std::make_shared<Track>(
-                //         tlwh, detection.confidence, detection.class_id,
-                //         embedding);
-                // }
-                // else
                 tracklet = std::make_shared<Track>(
                     tlwh, detection.confidence, detection.class_id);
 
