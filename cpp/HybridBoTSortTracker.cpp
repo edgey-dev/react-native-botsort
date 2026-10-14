@@ -1,61 +1,12 @@
 // cpp/HybridBoTSortTracker.cpp
 #include "HybridBoTSortTracker.hpp"
+#include "CameraFrameView.hpp"
 #include <opencv2/imgproc.hpp>
 #include <Eigen/Dense>
 #include <algorithm> // For std::max
 #include <cstdint>
-#include <functional>
 #include <stdexcept>
-#include <utility>
 
-#if __APPLE__
-#include <CoreVideo/CVPixelBuffer.h>
-#else
-#include <android/hardware_buffer.h>
-#endif
-
-#if __APPLE__
-namespace
-{
-    class NativeBufferReleaseGuard
-    {
-    public:
-        explicit NativeBufferReleaseGuard(std::function<void()> release) : release(std::move(release)) {}
-        ~NativeBufferReleaseGuard() { releaseNow(); }
-
-        void releaseNow()
-        {
-            if (release)
-            {
-                release();
-                release = {};
-            }
-        }
-
-    private:
-        std::function<void()> release;
-    };
-
-    class PixelBufferUnlockGuard
-    {
-    public:
-        explicit PixelBufferUnlockGuard(CVPixelBufferRef pixelBuffer) : pixelBuffer(pixelBuffer) {}
-        ~PixelBufferUnlockGuard() { unlockNow(); }
-
-        void unlockNow()
-        {
-            if (pixelBuffer != nullptr)
-            {
-                CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-                pixelBuffer = nullptr;
-            }
-        }
-
-    private:
-        CVPixelBufferRef pixelBuffer;
-    };
-}
-#endif
 
 namespace margelo::nitro::botsort
 {
@@ -68,131 +19,20 @@ namespace margelo::nitro::botsort
     }
 
     std::vector<TrackedObject> HybridBoTSortTracker::track(
-        const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec> &frame,
-        const std::vector<BoundingBox> &detections)
+        const VisionCameraFrame &frame,
+        const std::vector<BoundingBox> &detections, std::optional<bool> skip_gmc)
     {
         if (!tracker)
             return {};
 
-        cv::Mat matFrame;
-        int originalWidth = 0;
-        int originalHeight = 0;
-
-// 1. Hardware Direct Video Frame Extraction & Channel Mapping
-#if __ANDROID__
-        auto nativeBuffer = frame->getNativeBuffer();
-        AHardwareBuffer *buffer = reinterpret_cast<AHardwareBuffer *>(nativeBuffer.pointer);
-        if (!buffer)
+        CameraFrameView<margelo::nitro::camera::HybridFrameSpec> frameView(frame);
+        if (!frameView)
             return {};
 
-        AHardwareBuffer_Desc desc;
-        AHardwareBuffer_describe(buffer, &desc);
-        originalWidth = desc.width;
-        originalHeight = desc.height;
-
-        void *baseAddress = nullptr;
-        if (AHardwareBuffer_lock(buffer, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, &baseAddress) != 0 || !baseAddress)
-        {
-            nativeBuffer.release();
-            return {};
-        }
-
-        if (desc.format == AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM)
-        {
-            size_t bytesPerRow = desc.stride * 4;
-            // cv::Mat rgbaFrame = cv::Mat(desc.height, desc.width, CV_8UC4, baseAddress, bytesPerRow);
-            // cv::cvtColor(rgbaFrame, matFrame, cv::COLOR_RGBA2GRAY);
-            matFrame = cv::Mat(desc.height, desc.width, CV_8UC4, baseAddress, bytesPerRow);
-        }
-        else if (desc.format == AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420)
-        {
-            matFrame = cv::Mat(desc.height, desc.width, CV_8UC1, baseAddress, desc.stride);
-        }
-        else
-        {
-            AHardwareBuffer_unlock(buffer, nullptr);
-            nativeBuffer.release();
-            return {};
-        }
-
-#elif __APPLE__
-        if (!frame->getHasNativeBuffer())
-            return {};
-
-        auto nativeBuffer = frame->getNativeBuffer();
-        NativeBufferReleaseGuard nativeBufferGuard(nativeBuffer.release);
-        CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>(
-            static_cast<uintptr_t>(nativeBuffer.pointer));
-        if (!pixelBuffer)
-            return {};
-
-        if (CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly) != kCVReturnSuccess)
-        {
-            return {};
-        }
-        PixelBufferUnlockGuard pixelBufferUnlockGuard(pixelBuffer);
-
-        originalWidth = (int)CVPixelBufferGetWidth(pixelBuffer);
-        originalHeight = (int)CVPixelBufferGetHeight(pixelBuffer);
-
-        if (CVPixelBufferIsPlanar(pixelBuffer))
-        {
-            void *baseAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
-            size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
-            matFrame = cv::Mat(originalHeight, originalWidth, CV_8UC1, baseAddress, bytesPerRow);
-        }
-        else
-        {
-            void *baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
-            size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-            // cv::Mat rgbaFrame = cv::Mat(originalHeight, originalWidth, CV_8UC4, baseAddress, bytesPerRow);
-            // cv::cvtColor(rgbaFrame, matFrame, cv::COLOR_BGRA2GRAY);
-            matFrame = cv::Mat(originalHeight, originalWidth, CV_8UC4, baseAddress, bytesPerRow);
-        }
-#endif
-
-        // Mathematical Division-by-Zero / Frame Empty Safety Gate
-        // if (originalWidth <= 0 || originalHeight <= 0 || matFrame.empty())
-        if (matFrame.empty())
-        {
-#if __ANDROID__
-            AHardwareBuffer_unlock(buffer, nullptr);
-            nativeBuffer.release();
-#elif __APPLE__
-            pixelBufferUnlockGuard.unlockNow();
-            nativeBufferGuard.releaseNow();
-#endif
-            return {};
-        }
-
-        // 2. Proportional Scaling & Rescale Factor Extractions with Edge Guards
-        // int targetWidth = 320;
-        // int targetHeight = std::max((int)((float)originalHeight * ((float)targetWidth / (float)originalWidth)), 1);
-
-        // cv::Mat lowResFrame;
-        // cv::resize(matFrame, lowResFrame, cv::Size(targetWidth, targetHeight));
-
-        // Calculate scale tracking dimensions
-        // float scaleFactorX = (float)originalWidth / (float)targetWidth;
-        // float scaleFactorY = (float)originalHeight / (float)targetHeight;
-
-        // 3. Downscale Bounding Boxes to 320px Tracker Workspace Coordinates
-        // Eigen::MatrixXf scaledDets(detections.size(), 6);
-        // for (size_t i = 0; i < detections.size(); ++i)
-        // {
-        //     const auto &d = detections[i];
-        //     scaledDets(i, 0) = static_cast<float>(d.x) / scaleFactorX;
-        //     scaledDets(i, 1) = static_cast<float>(d.y) / scaleFactorY;
-        //     scaledDets(i, 2) = static_cast<float>(d.x + d.width) / scaleFactorX;
-        //     scaledDets(i, 3) = static_cast<float>(d.y + d.height) / scaleFactorY;
-        //     scaledDets(i, 4) = static_cast<float>(d.confidence);
-        //     scaledDets(i, 5) = static_cast<float>(d.classId);
-        // }
-
-        // 4. Update the tracker tracking matrices
-        // Eigen::MatrixXf tracks = tracker->update(scaledDets, lowResFrame);
+        const cv::Mat &matFrame = frameView.image();
 
         std::vector<Detection> tracker_detections;
+        tracker_detections.reserve(detections.size());
         for (auto &detection : detections)
         {
             Detection tracker_detection;
@@ -203,24 +43,55 @@ namespace margelo::nitro::botsort
             tracker_detections.push_back(tracker_detection);
         }
 
-        auto tracks = tracker->track(tracker_detections, matFrame);
-
-// 5. Clean up Native Memory Locks Immediately
-#if __ANDROID__
-        AHardwareBuffer_unlock(buffer, nullptr);
-        nativeBuffer.release();
-#elif __APPLE__
-        pixelBufferUnlockGuard.unlockNow();
-        nativeBufferGuard.releaseNow();
-#endif
+        auto tracks = tracker->track(tracker_detections, matFrame, skip_gmc);
+        frameView.release();
 
         std::vector<TrackedObject> nativeResults;
+        nativeResults.reserve(tracks.size());
         for (auto &track : tracks)
         {
-            // float trackedX1 = tracks(i, 0) * scaleFactorX;
-            // float trackedY1 = tracks(i, 1) * scaleFactorY;
-            // float trackedX2 = tracks(i, 2) * scaleFactorX;
-            // float trackedY3 = tracks(i, 3) * scaleFactorY;
+            auto bbox = track->get_tlwh();
+            nativeResults.emplace_back(
+                static_cast<double>(track->track_id),
+                static_cast<double>(bbox[0]),
+                static_cast<double>(bbox[1]),
+                static_cast<double>(bbox[2]),
+                static_cast<double>(bbox[3]),
+                static_cast<double>(track->get_class_id()));
+        }
+
+        return nativeResults;
+    }
+
+    std::vector<TrackedObject> HybridBoTSortTracker::predict_only(const std::optional<VisionCameraFrame> &frame)
+    {
+        if (!tracker)
+            return {};
+        std::vector<std::shared_ptr<Track>> tracks;
+
+        if (!frame)
+        {
+            tracks = tracker->predict_only(std::nullopt);
+        }
+        else
+        {
+            CameraFrameView<margelo::nitro::camera::HybridFrameSpec> frameView(frame.value());
+            if (!frameView)
+            {
+                tracks = tracker->predict_only(std::nullopt);
+            }
+            else
+            {
+                cv::Mat matFrame = frameView.image();
+                tracks = tracker->predict_only(matFrame);
+                frameView.release();
+            }
+        }
+
+        std::vector<TrackedObject> nativeResults;
+        nativeResults.reserve(tracks.size());
+        for (auto &track : tracks)
+        {
             auto bbox = track->get_tlwh();
             nativeResults.emplace_back(
                 static_cast<double>(track->track_id),

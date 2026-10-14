@@ -25,7 +25,9 @@ public:
      * @return std::vector<std::shared_ptr<Track>>
      */
     std::vector<std::shared_ptr<Track>>
-    track(const std::vector<Detection> &detections, const cv::Mat &frame);
+    track(const std::vector<Detection> &detections, const cv::Mat &frame, std::optional<bool> skip_gmc);
+    std::vector<std::shared_ptr<Track>>
+    predict_only(const std::optional<cv::Mat> &frame);
 
 private:
     /**

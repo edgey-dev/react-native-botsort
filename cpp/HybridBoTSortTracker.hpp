@@ -7,6 +7,8 @@
 #include <vector>
 #include "DataType.hpp"
 
+using VisionCameraFrame = std::shared_ptr<margelo::nitro::camera::HybridFrameSpec>;
+
 namespace margelo::nitro::botsort
 {
 
@@ -19,8 +21,10 @@ namespace margelo::nitro::botsort
         void initialize(const std::optional<BoTSORTConfig> &trackerConfig, const std::optional<GMC_Config> &gmcConfig) override;
 
         std::vector<TrackedObject> track(
-            const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec> &frame,
-            const std::vector<BoundingBox> &detections) override;
+            const VisionCameraFrame &frame,
+            const std::vector<BoundingBox> &detections, std::optional<bool> skip_gmc) override;
+
+        std::vector<TrackedObject> predict_only(const std::optional<VisionCameraFrame> &frame) override;
 
     private:
         std::unique_ptr<BoTSORT> tracker;

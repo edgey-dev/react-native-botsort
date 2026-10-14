@@ -110,9 +110,40 @@ BoTSORT::BoTSORT(const std::optional<margelo::nitro::botsort::BoTSORTConfig> &tr
         _gmc_enabled = false;
     }
 }
-
 std::vector<std::shared_ptr<Track>>
-BoTSORT::track(const std::vector<Detection> &detections, const cv::Mat &frame)
+BoTSORT::predict_only(const std::optional<cv::Mat> &frame) {
+    _frame_id++;
+    std::vector<std::shared_ptr<Track>> unconfirmed_tracks, tracked_tracks;
+    for (const std::shared_ptr<Track> &track : _tracked_tracks)
+    {
+        if (!track->is_activated)
+        {
+            unconfirmed_tracks.push_back(track);
+        }
+        else{
+            tracked_tracks.push_back(track);
+        }
+    }
+
+    std::vector<std::shared_ptr<Track>> tracks_pool;
+    tracks_pool = _merge_track_lists(tracked_tracks, _lost_tracks);
+
+    // Predict the location of the tracks with KF (even for lost tracks)
+    Track::multi_predict(tracks_pool, *_kalman_filter);
+
+    // Estimate camera motion and apply camera motion compensation
+    if (_gmc_enabled && frame)
+    {
+        const std::vector<Detection> detections = {};
+        HomographyMatrix H = _gmc_algo->apply(frame.value(), detections);
+        Track::multi_gmc(tracks_pool, H);
+        Track::multi_gmc(unconfirmed_tracks, H);
+    }
+
+    return tracked_tracks;
+}
+std::vector<std::shared_ptr<Track>>
+BoTSORT::track(const std::vector<Detection> &detections, const cv::Mat &frame, std::optional<bool> skip_gmc)
 {
     ////////////////// CREATE TRACK OBJECT FOR ALL THE DETECTIONS //////////////////
     // For all detections, extract features, create tracks and classify on the segregate of confidence
@@ -197,7 +228,7 @@ BoTSORT::track(const std::vector<Detection> &detections, const cv::Mat &frame)
     Track::multi_predict(tracks_pool, *_kalman_filter);
 
     // Estimate camera motion and apply camera motion compensation
-    if (_gmc_enabled)
+    if (_gmc_enabled && !skip_gmc.value_or(false))
     {
         HomographyMatrix H = _gmc_algo->apply(frame, detections);
         Track::multi_gmc(tracks_pool, H);

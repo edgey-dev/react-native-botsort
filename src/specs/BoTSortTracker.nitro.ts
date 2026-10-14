@@ -210,5 +210,10 @@ export interface BoTSortTracker extends HybridObject<{
   android: 'c++';
 }> {
   initialize(trackerConfig?: BoTSORTConfig, gmcConfig?: GMCConfig): void;
-  track(frame: Frame, detections: BoundingBox[]): TrackedObject[];
+  track(
+    frame: Frame,
+    detections: BoundingBox[],
+    skip_gmc?: boolean
+  ): TrackedObject[];
+  predict_only(frame?: Frame): TrackedObject[];
 }
